@@ -31,20 +31,12 @@ class InvalidSecretKey(RGWAdminException):
     """Invalid secret key specified."""
 
 
-class InvalidKeyType(RGWAdminException):
-    """Invalid key type specified."""
-
-
 class KeyExists(RGWAdminException):
     """Provided access key exists and belongs to another user."""
 
 
 class EmailExists(RGWAdminException):
     """Provided email address exists."""
-
-
-class InvalidCap(RGWAdminException):
-    """Attempt to grant invalid admin capability."""
 
 
 class SubuserExists(RGWAdminException):
