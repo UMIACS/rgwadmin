@@ -46,10 +46,15 @@ class RGWAdmin:
         except Exception as e:
             log.exception(e)
             sys.exit(1)
-        j = json.load(StringIO(r.content))
+        try:
+            j = json.load(StringIO(r.content))
+        except ValueError as e:
+            log.info(e)
+            j = None
         if r.status_code == requests.codes.ok:
             return j
         else:
+            log.error(j)
             code = str(j['Code'])
             if code == 'AccessDenied':
                 raise AccessDenied
@@ -152,10 +157,12 @@ class RGWAdmin:
         return self.request('delete', '/%s/usage?format=%s%s' %
                             (self._admin, self._response, parameters))
 
-    def modify_user(self, uid, display_name, email=None, key_type='s3',
+    def modify_user(self, uid, display_name=None, email=None, key_type='s3',
                     access_key=None, secret_key=None, user_caps=None,
                     generate_key=True, max_buckets=None, suspended=False):
-        parameters = 'uid=%s&display-name=%s' % (uid, display_name)
+        parameters = 'uid=%s' % uid
+        if display_name is not None:
+            parameters += '&display-name=%s' % display_name
         if email is not None:
             parameters += '&email=%s' % email
         if key_type is not None:
@@ -250,6 +257,9 @@ class RGWAdmin:
         parameters += '&fix=%s' % fix
         return self.request('get', '/%s/bucket?index&format=%s&%s' %
                             (self._admin, self._response, parameters))
+
+    def create_bucket(self, bucket):
+        return self.request('put', '/%s' % bucket)
 
     def remove_bucket(self, bucket, purge_objects=False):
         parameters = 'bucket=%s' % bucket
