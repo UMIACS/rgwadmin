@@ -1,8 +1,11 @@
 import sys
+import time
 import json
 from StringIO import StringIO
 import requests
 import logging
+import string
+import random
 from awsauth import S3Auth
 
 from .exceptions import (
@@ -298,3 +301,11 @@ class RGWAdmin:
         parameters = 'uid=%s&user-caps=%s' % (uid, user_caps)
         return self.request('delete', '/%s/user?caps&format=%s&%s' %
                             (self._admin, self._response, parameters))
+
+    @staticmethod
+    def parse_rados_datestring(s):
+        return time.strptime(s, "%Y-%m-%dT%H:%M:%S.000Z")
+
+    @staticmethod
+    def gen_secret_key(size=40, chars=string.letters + string.digits):
+        return ''.join(random.choice(chars) for x in range(size))
