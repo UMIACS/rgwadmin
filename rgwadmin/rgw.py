@@ -226,12 +226,12 @@ class RGWAdmin:
         parameters = 'uid=%s' % uid
         if subuser is not None:
             parameters += '&subuser=%s' % subuser
-        parameters = '&key-type=%s' % key_type
+        parameters += '&key-type=%s' % key_type
         if access_key is not None:
             parameters += '&access-key=%s' % access_key
         if secret_key is not None:
             parameters += '&secret-key=%s' % secret_key
-        parameters = '&generate-key=%s' % generate_key
+        parameters += '&generate-key=%s' % generate_key
         return self.request('put', '/%s/user?key&format=%s&%s' %
                             (self._admin, self._response, parameters))
 
