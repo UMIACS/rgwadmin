@@ -22,13 +22,12 @@ log = logging.getLogger(__name__)
 
 class RGWAdmin:
 
-    def __init__(self, access_key, secret_key, server, port=443,
+    def __init__(self, access_key, secret_key, server,
                  admin='admin', response='json', ca_bundle=None,
                  secure=True, verify=True):
         self._access_key = access_key
         self._secret_key = secret_key
         self._server = server
-        self._port = port
         self._admin = admin
         ## ssl support
         self._ca_bundle = ca_bundle
@@ -40,10 +39,9 @@ class RGWAdmin:
         self._response = response
 
     def request(self, method, request, data=None):
-        url = '%s://%s:%d%s' % (self._protocol,
-                                self._server,
-                                self._port,
-                                request)
+        url = '%s://%s%s' % (self._protocol,
+                             self._server,
+                             request)
         log.debug('URL: %s' % url)
         log.debug('Access Key: %s' % self._access_key)
         log.debug('Secret Key: %s' % self._secret_key)
