@@ -44,9 +44,8 @@ class RGWAdmin:
                              request)
         log.debug('URL: %s' % url)
         log.debug('Access Key: %s' % self._access_key)
-        log.debug('Secret Key: %s' % self._secret_key)
-        log.debug('Verify : %s  CA Bundle : %s' % (self._verify,
-                                                   self._ca_bundle))
+        log.debug('Verify: %s  CA Bundle: %s' % (self._verify,
+                                                 self._ca_bundle))
         try:
             m = getattr(requests, method.lower())
             if self._ca_bundle:
