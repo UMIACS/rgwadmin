@@ -48,7 +48,7 @@ class RGWAdmin:
                   self._secret_key, self._server))
         except Exception as e:
             log.exception(e)
-            sys.exit(1)
+            return None
         try:
             j = json.load(StringIO(r.content))
         except ValueError as e:
