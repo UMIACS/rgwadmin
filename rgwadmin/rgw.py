@@ -276,17 +276,17 @@ class RGWAdmin:
     def remove_bucket(self, bucket, purge_objects=False):
         parameters = 'bucket=%s' % bucket
         parameters += '&purge-objects=%s' % purge_objects
-        return self.request('delete', '/%s/bucket&format=%s&%s' %
+        return self.request('delete', '/%s/bucket?format=%s&%s' %
                             (self._admin, self._response, parameters))
 
     def unlink_bucket(self, bucket, uid):
         parameters = 'bucket=%s&uid=%s' % (bucket, uid)
-        return self.request('post', '/%s/bucket&format=%s&%s' %
+        return self.request('post', '/%s/bucket?format=%s&%s' %
                             (self._admin, self._response, parameters))
 
     def link_bucket(self, bucket, uid):
         parameters = 'bucket=%s&uid=%s' % (bucket, uid)
-        return self.request('put', '/%s/bucket&format=%s&%s' %
+        return self.request('put', '/%s/bucket?format=%s&%s' %
                             (self._admin, self._response, parameters))
 
     def remove_object(self, bucket, object_name):
