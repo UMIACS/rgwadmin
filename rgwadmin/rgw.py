@@ -14,7 +14,8 @@ from .exceptions import (
     IndexRepairFailed, BucketNotEmpty, ObjectRemovalFailed,
     BucketUnlinkFailed, BucketLinkFailed, NoSuchObject,
     IncompleteBody, InvalidCap, NoSuchCap,
-    InternalError, NoSuchUser, NoSuchBucket, NoSuchKey
+    InternalError, NoSuchUser, NoSuchBucket, NoSuchKey,
+    ServerDown 
 )
 
 log = logging.getLogger(__name__)
@@ -66,8 +67,11 @@ class RGWAdmin:
         if r.status_code == requests.codes.ok:
             return j
         else:
-            log.error(j)
-            code = str(j['Code'])
+            if j is not None:
+                log.error(j)
+                code = str(j['Code'])
+            else:
+                raise ServerDown
             if code == 'AccessDenied':
                 raise AccessDenied
             if code == 'UserExists':
