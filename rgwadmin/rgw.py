@@ -15,7 +15,7 @@ from .exceptions import (
     BucketUnlinkFailed, BucketLinkFailed, NoSuchObject,
     IncompleteBody, InvalidCap, NoSuchCap,
     InternalError, NoSuchUser, NoSuchBucket, NoSuchKey,
-    ServerDown 
+    ServerDown, InvalidQuotaType
 )
 
 log = logging.getLogger(__name__)
@@ -194,6 +194,34 @@ class RGWAdmin:
             parameters += '&max-buckets=%s' % max_buckets
         parameters += '&suspended=%s' % suspended
         return self.request('post', '/%s/user?format=%s&%s' %
+                            (self._admin, self._response, parameters))
+
+    def get_quota(self, uid, quota_type, max_size_kb=None, max_objects=None,
+                  enabled=None):
+        if quota_type not in ['user', 'bucket']:
+            raise InvalidQuotaType
+        parameters = 'uid=%s&quota-type=%s' % (uid, quota_type)
+        if max_size_kb is not None:
+            parameters += '&max-size-kb=%d' % max_size_kb
+        if max_objects is not None:
+            parameters += '&max-objects=%d' % max_objects
+        if enabled is not None:
+            parameters += '&enabled=%s' % str(enabled).lower()
+        return self.request('get', '/%s/user?quota&format=%s&%s' %
+                            (self._admin, self._response, parameters))
+
+    def set_quota(self, uid, quota_type, max_size_kb=None, max_objects=None,
+                  enabled=None):
+        if quota_type not in ['user', 'bucket']:
+            raise InvalidQuotaType
+        parameters = 'uid=%s&quota-type=%s' % (uid, quota_type)
+        if max_size_kb is not None:
+            parameters += '&max-size-kb=%d' % max_size_kb
+        if max_objects is not None:
+            parameters += '&max-objects=%d' % max_objects
+        if enabled is not None:
+            parameters += '&enabled=%s' % str(enabled).lower()
+        return self.request('put', '/%s/user?quota&format=%s&%s' %
                             (self._admin, self._response, parameters))
 
     def remove_user(self, uid, purge_data=False):

@@ -2,7 +2,7 @@ from distutils.core import setup
 setup(
     name = "rgwadmin",
     packages = ["rgwadmin"],
-    version = "0.2.1",
+    version = "0.2.2",
     description = "Python Rados Gateway Admin API",
     author = "Derek Yarnell",
     author_email = "derek@umiacs.umd.edu",

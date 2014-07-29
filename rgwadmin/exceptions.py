@@ -101,3 +101,6 @@ class NoSuchKey(RGWAdminException):
 
 class ServerDown(RGWAdminException):
     """The backing server is not available."""
+
+class InvalidQuotaType(RGWAdminException):
+    """You must specify either a 'user' or 'bucket' quota type"""
