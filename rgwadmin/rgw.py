@@ -196,17 +196,10 @@ class RGWAdmin:
         return self.request('post', '/%s/user?format=%s&%s' %
                             (self._admin, self._response, parameters))
 
-    def get_quota(self, uid, quota_type, max_size_kb=None, max_objects=None,
-                  enabled=None):
+    def get_quota(self, uid, quota_type):
         if quota_type not in ['user', 'bucket']:
             raise InvalidQuotaType
         parameters = 'uid=%s&quota-type=%s' % (uid, quota_type)
-        if max_size_kb is not None:
-            parameters += '&max-size-kb=%d' % max_size_kb
-        if max_objects is not None:
-            parameters += '&max-objects=%d' % max_objects
-        if enabled is not None:
-            parameters += '&enabled=%s' % str(enabled).lower()
         return self.request('get', '/%s/user?quota&format=%s&%s' %
                             (self._admin, self._response, parameters))
 
