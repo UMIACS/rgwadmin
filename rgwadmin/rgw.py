@@ -203,6 +203,13 @@ class RGWAdmin:
         return self.request('get', '/%s/user?quota&format=%s&%s' %
                             (self._admin, self._response, parameters))
 
+    def get_user_quota(self, uid):
+        return self.get_quota(uid=uid, quota_type='user')
+
+    def get_user_bucket_quota(self, uid):
+        '''Return the quota set on every bucket owned/created by a user'''
+        return self.get_quota(uid=uid, quota_type='bucket')
+
     def set_quota(self, uid, quota_type, max_size_kb=None, max_objects=None,
                   enabled=None):
         if quota_type not in ['user', 'bucket']:
