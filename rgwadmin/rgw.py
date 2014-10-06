@@ -60,7 +60,7 @@ class RGWAdmin:
             log.exception(e)
             return None
         try:
-            j = json.load(StringIO(":".join(list(r.headers.items())[1]).split("Status")[0] if "quota" in url else r.content))
+            j = json.load(StringIO(":".join(list(r.headers.items()[3])).split("Status")[0] if "quota" in url else r.content))
         except ValueError as e:
             log.info(e)
             j = None
