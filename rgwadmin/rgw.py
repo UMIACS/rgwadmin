@@ -30,6 +30,8 @@ class RGWAdmin:
         self._secret_key = secret_key
         self._server = server
         self._admin = admin
+        self._response = response
+        
         ## ssl support
         self._ca_bundle = ca_bundle
         self._verify = verify
@@ -37,7 +39,6 @@ class RGWAdmin:
             self._protocol = 'https'
         else:
             self._protocol = 'http'
-        self._response = response
 
     def request(self, method, request, data=None):
         url = '%s://%s%s' % (self._protocol,
