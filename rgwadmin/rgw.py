@@ -15,7 +15,7 @@ from .exceptions import (
     BucketUnlinkFailed, BucketLinkFailed, NoSuchObject,
     IncompleteBody, InvalidCap, NoSuchCap,
     InternalError, NoSuchUser, NoSuchBucket, NoSuchKey,
-    ServerDown, InvalidQuotaType
+    ServerDown, InvalidQuotaType, InvalidArgument
 )
 
 log = logging.getLogger(__name__)
@@ -90,6 +90,8 @@ class RGWAdmin:
                 raise SubuserExists
             if code == 'InvalidAccess':
                 raise InvalidAccess
+            if code == 'InvalidArgument':
+                raise InvalidArgument
             if code == 'IndexRepairFailed':
                 raise IndexRepairFailed
             if code == 'BucketNotEmpty':

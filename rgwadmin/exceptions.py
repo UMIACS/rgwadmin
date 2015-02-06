@@ -23,6 +23,10 @@ class InvalidAccessKey(RGWAdminException):
     """Invalid access key specified."""
 
 
+class InvalidArgument(RGWAdminException):
+    """Invalid argument specified."""
+
+
 class InvalidKeyType(RGWAdminException):
     """Invalid key type specified."""
 
