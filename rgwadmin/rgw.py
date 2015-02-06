@@ -40,6 +40,16 @@ class RGWAdmin:
         else:
             self._protocol = 'http'
 
+    def __repr__(self):
+        return "%s (%s)" % (self.__class__.__name__, self.get_base_url())
+
+    def __str__(self):
+        returning = self.__repr__()
+        returning += '\nAccess Key: %s\n' % self._access_key
+        returning += 'Secret Key: ******\n'
+        returning += 'Response Method: %s\n' % self._response
+        returning += 'CA Bundle: %s\n' % self._ca_bundle
+        return returning
 
     def get_base_url(self):
         '''Return a base URL.  I.e. https://ceph.server'''
