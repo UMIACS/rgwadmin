@@ -40,10 +40,13 @@ class RGWAdmin:
         else:
             self._protocol = 'http'
 
+
+    def get_base_url(self):
+        '''Return a base URL.  I.e. https://ceph.server'''
+        return '%s://%s' % (self._protocol, self._server)
+
     def request(self, method, request, data=None):
-        url = '%s://%s%s' % (self._protocol,
-                             self._server,
-                             request)
+        url = '%s%s' % (self.get_base_url(), request)
         log.debug('URL: %s' % url)
         log.debug('Access Key: %s' % self._access_key)
         log.debug('Verify: %s  CA Bundle: %s' % (self._verify,
