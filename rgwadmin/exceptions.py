@@ -8,7 +8,7 @@ This module contains the rgwadmin exceptions.
 
 
 class RGWAdminException(RuntimeError):
-    """There was a unlabled exception that was raised durning your request"""
+    """There was a unlabeled exception that was raised during your request"""
 
 
 class AccessDenied(RGWAdminException):
