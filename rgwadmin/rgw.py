@@ -15,7 +15,7 @@ from .exceptions import (
     BucketUnlinkFailed, BucketLinkFailed, NoSuchObject,
     IncompleteBody, InvalidCap, NoSuchCap,
     InternalError, NoSuchUser, NoSuchBucket, NoSuchKey,
-    ServerDown, InvalidQuotaType
+    ServerDown, InvalidQuotaType, InvalidArgument
 )
 
 log = logging.getLogger(__name__)
@@ -30,6 +30,8 @@ class RGWAdmin:
         self._secret_key = secret_key
         self._server = server
         self._admin = admin
+        self._response = response
+        
         ## ssl support
         self._ca_bundle = ca_bundle
         self._verify = verify
@@ -37,12 +39,24 @@ class RGWAdmin:
             self._protocol = 'https'
         else:
             self._protocol = 'http'
-        self._response = response
+
+    def __repr__(self):
+        return "%s (%s)" % (self.__class__.__name__, self.get_base_url())
+
+    def __str__(self):
+        returning = self.__repr__()
+        returning += '\nAccess Key: %s\n' % self._access_key
+        returning += 'Secret Key: ******\n'
+        returning += 'Response Method: %s\n' % self._response
+        returning += 'CA Bundle: %s\n' % self._ca_bundle
+        return returning
+
+    def get_base_url(self):
+        '''Return a base URL.  I.e. https://ceph.server'''
+        return '%s://%s' % (self._protocol, self._server)
 
     def request(self, method, request, data=None):
-        url = '%s://%s%s' % (self._protocol,
-                             self._server,
-                             request)
+        url = '%s%s' % (self.get_base_url(), request)
         log.debug('URL: %s' % url)
         log.debug('Access Key: %s' % self._access_key)
         log.debug('Verify: %s  CA Bundle: %s' % (self._verify,
@@ -90,6 +104,8 @@ class RGWAdmin:
                 raise SubuserExists
             if code == 'InvalidAccess':
                 raise InvalidAccess
+            if code == 'InvalidArgument':
+                raise InvalidArgument
             if code == 'IndexRepairFailed':
                 raise IndexRepairFailed
             if code == 'BucketNotEmpty':

@@ -8,7 +8,7 @@ This module contains the rgwadmin exceptions.
 
 
 class RGWAdminException(RuntimeError):
-    """There was a unlabled exception that was raised durning your request"""
+    """There was a unlabeled exception that was raised during your request"""
 
 
 class AccessDenied(RGWAdminException):
@@ -21,6 +21,10 @@ class UserExists(RGWAdminException):
 
 class InvalidAccessKey(RGWAdminException):
     """Invalid access key specified."""
+
+
+class InvalidArgument(RGWAdminException):
+    """Invalid argument specified."""
 
 
 class InvalidKeyType(RGWAdminException):
