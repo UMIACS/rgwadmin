@@ -132,7 +132,7 @@ class RGWAdmin:
                 raise NoSuchBucket
             if code == 'NoSuchKey':
                 raise NoSuchKey
-            raise RGWAdminException
+            raise RGWAdminException(code)
 
     def get_user(self, uid):
         return self.request('get', '/%s/user?format=%s&uid=%s' %
