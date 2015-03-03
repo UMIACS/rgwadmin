@@ -132,7 +132,7 @@ class RGWAdmin:
                 raise NoSuchBucket
             if code == 'NoSuchKey':
                 raise NoSuchKey
-            raise RGWAdminException
+            raise RGWAdminException(code)
 
     def get_user(self, uid):
         return self.request('get', '/%s/user?format=%s&uid=%s' %
@@ -292,8 +292,10 @@ class RGWAdmin:
         return self.request('put', '/%s/user?key&format=%s&%s' %
                             (self._admin, self._response, parameters))
 
-    def remove_key(self, access_key, key_type, uid=None, subuser=None):
-        parameters = 'access-key=%s&key-type=%s' % (access_key, key_type)
+    def remove_key(self, access_key, key_type=None, uid=None, subuser=None):
+        parameters = 'access-key=%s' % (access_key)
+        if key_type is not None:
+            parameters += '&key-type=%s' % key_type
         if uid is not None:
             parameters += '&uid=%s' % uid
         if subuser is not None:

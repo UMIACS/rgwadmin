@@ -12,7 +12,7 @@ except ImportError:
 setup(
     name = "rgwadmin",
     packages = ["rgwadmin"],
-    version = "0.2.2",
+    version = "0.2.3",
     description = "Python Rados Gateway Admin API",
     author = "Derek Yarnell",
     author_email = "derek@umiacs.umd.edu",
