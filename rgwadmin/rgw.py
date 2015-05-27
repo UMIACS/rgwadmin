@@ -353,7 +353,7 @@ class RGWAdmin:
 
     def add_capability(self, uid, user_caps):
         parameters = 'uid=%s&user-caps=%s' % (uid, user_caps)
-        return self.request('delete', '/%s/user?caps&format=%s&%s' %
+        return self.request('put', '/%s/user?caps&format=%s&%s' %
                             (self._admin, self._response, parameters))
 
     def remove_capability(self, uid, user_caps):
