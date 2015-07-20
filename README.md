@@ -7,7 +7,7 @@ http://docs.ceph.com/docs/master/radosgw/adminops/
 ## Example Usage
 
 ```python
-from rgwadmin.rgw import RGWAdmin
+from rgwadmin import RGWAdmin
 
 rgw = RGWAdmin(access_key='XXX', secret_key='XXX', server='obj.example.com')
 rgw.create_user(
