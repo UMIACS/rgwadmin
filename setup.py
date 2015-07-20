@@ -20,6 +20,7 @@ strings, parsing error codes, and all that fun stuff!  It's awesome!  Enjoy!
 '''
 
 from rgwadmin import __version__
+from rgwadmin import __license__
 
 setup(
     name="rgwadmin",
@@ -30,7 +31,7 @@ setup(
     maintainer="UMIACS Staff",
     maintainer_email="github@umiacs.umd.edu",
     url="https://github.com/UMIACS/rgwadmin",
-    license="LGPL v2.1",
+    license=__license__,
     description="Python Rados Gateway Admin API",
     long_description=long_description,
     keywords=["ceph", "radosgw", "admin api"],
