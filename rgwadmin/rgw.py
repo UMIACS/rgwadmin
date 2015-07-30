@@ -74,10 +74,19 @@ class RGWAdmin:
             log.exception(e)
             return None
         try:
-            j = json.load(StringIO(":".join(list(r.headers.items()[3])).split("Status")[0] if "quota" in url else r.content))
+            j = json.load(StringIO(r.content))
         except ValueError as e:
-            log.info(e)
-            j = None
+            # some calls in the admin API encode the info in the headers
+            # instead of the body.  The code that follows is an ugly hack
+            # due to the fact that there's a bug in the admin API we're
+            # interfacing with.
+
+            # find a key with a '{', since this will hold the json response
+            for k, v in r.headers.items():
+                if '{' in k:
+                    json_string = ":".join([k, v]).split('}')[0] + '}'
+                    j = json.load(StringIO(json_string))
+                    break
         if r.status_code == requests.codes.ok:
             return j
         else:
