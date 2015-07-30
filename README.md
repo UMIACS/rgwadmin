@@ -4,6 +4,7 @@ This is a Python library to allow access to the Ceph Object Storage Admin API.
 
 http://docs.ceph.com/docs/master/radosgw/adminops/
 
+
 ## Example Usage
 
 ```python
@@ -24,6 +25,7 @@ rgw.set_quota(
 rgw.remove_user(uid='liam', purge_data=True)
 ```
 
+
 ## Requirements
 
 rgwadmin requires the following Python packages:
@@ -33,6 +35,30 @@ rgwadmin requires the following Python packages:
 
 Additionally, you need to have a [Ceph](http://www.ceph.org) Object Storage instance with a user that has appropriate caps (capabilities) on the parts of the API that you want to access.  See the [Ceph Object Storage](http://docs.ceph.com/docs/master/radosgw/) page for more information.
 
+
 ## Installation
 
 ```pip install rgwadmin```
+
+
+## License
+
+    rgwadmin - a Python interface to the Rados Gateway Admin API
+    Copyright (C) 2015  UMIACS
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
+    Email:
+        github@umiacs.umd.edu
