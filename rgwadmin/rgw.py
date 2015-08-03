@@ -1,10 +1,11 @@
 import time
 import json
 from StringIO import StringIO
-import requests
 import logging
 import string
 import random
+
+import requests
 from awsauth import S3Auth
 
 from .exceptions import (
