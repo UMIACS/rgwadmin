@@ -26,6 +26,10 @@ setup(
     name="rgwadmin",
     packages=["rgwadmin"],
     version=__version__,
+    install_requires=[
+        "requests",
+        "requests-aws",
+    ],
     author="Derek Yarnell",
     author_email="derek@umiacs.umd.edu",
     maintainer="UMIACS Staff",
