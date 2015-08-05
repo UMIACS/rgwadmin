@@ -82,6 +82,10 @@ class RGWAdmin:
             # due to the fact that there's a bug in the admin API we're
             # interfacing with.
 
+            # set a default value for j in case we don't find json in the
+            # headers below
+            j = None
+
             # find a key with a '{', since this will hold the json response
             for k, v in r.headers.items():
                 if '{' in k:
