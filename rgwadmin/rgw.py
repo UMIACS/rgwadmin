@@ -32,8 +32,8 @@ class RGWAdmin:
         self._server = server
         self._admin = admin
         self._response = response
-        
-        ## ssl support
+
+        # ssl support
         self._ca_bundle = ca_bundle
         self._verify = verify
         if secure:
