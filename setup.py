@@ -9,8 +9,7 @@ except ImportError:
     from distutils.core import setup
     extra = {}
 
-long_description = \
-'''
+long_description = '''
 rgwadmin is a Python interface to the Rados Gateway Admin API.
 
 It allows for the creation, modification, and deletion of users and their
@@ -19,6 +18,11 @@ to save you from interacting directly with a REST interface, constructing query
 strings, parsing error codes, and all that fun stuff!  It's awesome!  Enjoy!
 '''
 
+install_requires = [
+    "requests",
+    "requests-aws",
+]
+
 from rgwadmin import __version__
 from rgwadmin import __license__
 
@@ -26,10 +30,8 @@ setup(
     name="rgwadmin",
     packages=["rgwadmin"],
     version=__version__,
-    install_requires=[
-        "requests",
-        "requests-aws",
-    ],
+    install_requires=install_requires,
+    setup_requires=install_requires,  # need the requests module in __init__.py
     author="Derek Yarnell",
     author_email="derek@umiacs.umd.edu",
     maintainer="UMIACS Staff",
