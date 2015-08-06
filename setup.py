@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
 from __future__ import with_statement
-
+import ast
+import re
 try:
     from setuptools import setup
     extra = dict(test_suite="tests.test.suite", include_package_data=True)
@@ -23,21 +24,23 @@ install_requires = [
     "requests-aws",
 ]
 
-from rgwadmin import __version__
-from rgwadmin import __license__
+_version_re = re.compile(r'__version__\s+=\s+(.*)')
+with open('rgwadmin/__init__.py', 'rb') as f:
+    version = str(ast.literal_eval(_version_re.search(
+        f.read().decode('utf-8')).group(1)))
+
 
 setup(
     name="rgwadmin",
     packages=["rgwadmin"],
-    version=__version__,
+    version=version,
     install_requires=install_requires,
-    setup_requires=install_requires,  # need the requests module in __init__.py
     author="Derek Yarnell",
     author_email="derek@umiacs.umd.edu",
     maintainer="UMIACS Staff",
     maintainer_email="github@umiacs.umd.edu",
     url="https://github.com/UMIACS/rgwadmin",
-    license=__license__,
+    license="LGPL v2.1",
     description="Python Rados Gateway Admin API",
     long_description=long_description,
     keywords=["ceph", "radosgw", "admin api"],
