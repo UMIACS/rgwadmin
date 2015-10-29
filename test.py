@@ -5,6 +5,7 @@ import logging
 import rgwadmin
 import unittest
 import random
+from rgwadmin.exceptions import BucketAlreadyExists
 
 logging.basicConfig(level=logging.WARNING)
 
@@ -22,8 +23,10 @@ class RGWAdminTest(unittest.TestCase):
                                      secure=True)
         self.user1 = 'foo1209'
         self.user2 = 'foo1213'
+        self.user3 = 'bar3142'
         self.secret = rgwadmin.RGWAdmin.gen_secret_key()
         user1 = self.rgw.create_user(uid=self.user1,
+                                     email='%s@example.com' % self.user1,
                                      display_name='Unit Test %s' % self.user1,
                                      secret_key=self.secret)
         user2 = self.rgw.create_user(uid=self.user2,
@@ -43,6 +46,15 @@ class RGWAdminTest(unittest.TestCase):
                                     email='%s@test.com' % self.user1)
         self.assertTrue(user['email'] == '%s@test.com' % self.user1)
 
+    def test_duplicate_email(self):
+        # NOTE: this exception is wrong and should be fixed at some point
+        # in the future in Ceph http://tracker.ceph.com/issues/13635
+        with self.assertRaises(BucketAlreadyExists):
+            self.rgw.create_user(uid=self.user3,
+                                 email='%s@example.com' % self.user1,
+                                 display_name='Unit Test %s' % self.user3,
+                                 secret_key=rgwadmin.RGWAdmin.gen_secret_key())
+
     def test_get_user(self):
         user = self.rgw.get_user(uid=self.user2)
         self.assertTrue(user['display_name'] == 'Unit Test %s' % self.user2)
@@ -60,12 +72,14 @@ class RGWAdminTest(unittest.TestCase):
         self.assertTrue(size == user1_quota_info['max_size_kb'])
 
     def test_bucket(self):
-        bucket = self.user1 + '_bucket'
-        self.rgw.create_bucket(bucket=bucket)
-        self.rgw.link_bucket(bucket=bucket, uid=self.user1)
-        self.rgw.get_bucket(uid=self.user1, bucket=bucket)
-        self.rgw.get_policy(bucket=bucket)
-        self.rgw.remove_bucket(bucket=bucket, purge_objects=True)
+        bucket_name = self.user1 + '_bucket'
+        self.rgw.create_bucket(bucket=bucket_name)
+        bucket = self.rgw.get_bucket(bucket=bucket_name)
+        self.rgw.link_bucket(bucket=bucket_name, bucket_id=bucket['id'],
+                             uid=self.user1)
+        self.rgw.get_bucket(uid=self.user1, bucket=bucket_name)
+        self.rgw.get_policy(bucket=bucket_name)
+        self.rgw.remove_bucket(bucket=bucket_name, purge_objects=True)
         self.assertTrue(True)
 
     def test_get_usage(self):

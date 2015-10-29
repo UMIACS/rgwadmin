@@ -316,8 +316,9 @@ class RGWAdmin:
         return self.request('post', '/%s/bucket?format=%s&%s' %
                             (self._admin, self._response, parameters))
 
-    def link_bucket(self, bucket, uid):
-        parameters = 'bucket=%s&uid=%s' % (bucket, uid)
+    def link_bucket(self, bucket, bucket_id, uid):
+        parameters = 'bucket=%s&bucket-id=%s&uid=%s' % \
+            (bucket, bucket_id, uid)
         return self.request('put', '/%s/bucket?format=%s&%s' %
                             (self._admin, self._response, parameters))
 
