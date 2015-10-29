@@ -4,6 +4,7 @@ import os
 import logging
 import rgwadmin
 import unittest
+import random
 
 logging.basicConfig(level=logging.WARNING)
 
@@ -50,6 +51,13 @@ class RGWAdminTest(unittest.TestCase):
         users = self.rgw.get_users()
         self.assertTrue(self.user1 in users)
         self.assertTrue(self.user2 in users)
+
+    def test_user_quota(self):
+        size = random.randint(1000, 1000000)
+        self.rgw.set_quota(uid=self.user1, quota_type='user',
+                           max_size_kb=size, enabled=True)
+        user1_quota_info = self.rgw.get_user_quota(uid=self.user1)
+        self.assertTrue(size == user1_quota_info['max_size_kb'])
 
     def test_bucket(self):
         bucket = self.user1 + '_bucket'
