@@ -16,7 +16,7 @@ from .exceptions import (
     BucketUnlinkFailed, BucketLinkFailed, NoSuchObject,
     IncompleteBody, InvalidCap, NoSuchCap,
     InternalError, NoSuchUser, NoSuchBucket, NoSuchKey,
-    ServerDown, InvalidQuotaType, InvalidArgument
+    ServerDown, InvalidQuotaType, InvalidArgument, BucketAlreadyExists
 )
 
 log = logging.getLogger(__name__)
@@ -56,24 +56,8 @@ class RGWAdmin:
         '''Return a base URL.  I.e. https://ceph.server'''
         return '%s://%s' % (self._protocol, self._server)
 
-    def request(self, method, request, data=None):
-        url = '%s%s' % (self.get_base_url(), request)
-        log.debug('URL: %s' % url)
-        log.debug('Access Key: %s' % self._access_key)
-        log.debug('Verify: %s  CA Bundle: %s' % (self._verify,
-                                                 self._ca_bundle))
-        try:
-            m = getattr(requests, method.lower())
-            if self._ca_bundle:
-                verify = self._ca_bundle
-            else:
-                verify = self._verify
-            r = m(url, auth=S3Auth(self._access_key,
-                  self._secret_key, self._server),
-                  verify=verify)
-        except Exception as e:
-            log.exception(e)
-            return None
+    def _load_request(self, r):
+        '''Load the request given as JSON handling exceptions if necessary'''
         try:
             j = json.load(StringIO(r.content))
         except ValueError as e:
@@ -100,53 +84,37 @@ class RGWAdmin:
                 code = str(j['Code'])
             else:
                 raise ServerDown
-            if code == 'AccessDenied':
-                raise AccessDenied
-            if code == 'UserExists':
-                raise UserExists
-            if code == 'InvalidAccessKey':
-                raise InvalidAccessKey
-            if code == 'InvalidKeyType':
-                raise InvalidKeyType
-            if code == 'InvalidSecretKey':
-                raise InvalidSecretKey
-            if code == 'KeyExists':
-                raise KeyExists
-            if code == 'EmailExists':
-                raise EmailExists
-            if code == 'SubuserExists':
-                raise SubuserExists
-            if code == 'InvalidAccess':
-                raise InvalidAccess
-            if code == 'InvalidArgument':
-                raise InvalidArgument
-            if code == 'IndexRepairFailed':
-                raise IndexRepairFailed
-            if code == 'BucketNotEmpty':
-                raise BucketNotEmpty
-            if code == 'ObjectRemovalFailed':
-                raise ObjectRemovalFailed
-            if code == 'BucketUnlinkFailed':
-                raise BucketUnlinkFailed
-            if code == 'BucketLinkFailed':
-                raise BucketLinkFailed
-            if code == 'NoSuchObject':
-                raise NoSuchObject
-            if code == 'IncompleteBody':
-                raise IncompleteBody
-            if code == 'InvalidCap':
-                raise InvalidCap
-            if code == 'NoSuchCap':
-                raise NoSuchCap
-            if code == 'InternalError':
-                raise InternalError
-            if code == 'NoSuchUser':
-                raise NoSuchUser
-            if code == 'NoSuchBucket':
-                raise NoSuchBucket
-            if code == 'NoSuchKey':
-                raise NoSuchKey
+            for e in [AccessDenied, UserExists, InvalidAccessKey,
+                      InvalidKeyType, InvalidSecretKey, KeyExists, EmailExists,
+                      SubuserExists, InvalidAccess, InvalidArgument,
+                      IndexRepairFailed, BucketNotEmpty, ObjectRemovalFailed,
+                      BucketUnlinkFailed, BucketLinkFailed, NoSuchObject,
+                      InvalidCap, NoSuchCap, NoSuchUser, NoSuchBucket,
+                      NoSuchKey, IncompleteBody, BucketAlreadyExists,
+                      InternalError]:
+                if code == e.__name__:
+                    raise e
             raise RGWAdminException(code)
+
+    def request(self, method, request, data=None):
+        url = '%s%s' % (self.get_base_url(), request)
+        log.debug('URL: %s' % url)
+        log.debug('Access Key: %s' % self._access_key)
+        log.debug('Verify: %s  CA Bundle: %s' % (self._verify,
+                                                 self._ca_bundle))
+        try:
+            m = getattr(requests, method.lower())
+            if self._ca_bundle:
+                verify = self._ca_bundle
+            else:
+                verify = self._verify
+            r = m(url, auth=S3Auth(self._access_key,
+                  self._secret_key, self._server),
+                  verify=verify)
+        except Exception as e:
+            log.exception(e)
+            return None
+        return self._load_request(r)
 
     def get_user(self, uid):
         return self.request('get', '/%s/user?format=%s&uid=%s' %

@@ -110,3 +110,7 @@ class ServerDown(RGWAdminException):
 
 class InvalidQuotaType(RGWAdminException):
     """You must specify either a 'user' or 'bucket' quota type"""
+
+
+class BucketAlreadyExists(RGWAdminException):
+    """The bucket already exists"""
