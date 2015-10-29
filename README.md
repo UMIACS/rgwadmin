@@ -33,8 +33,20 @@ rgwadmin requires the following Python packages:
  * [requests](http://python-requests.org/)
  * [requests-aws](https://github.com/tax/python-requests-aws)
 
-Additionally, you need to have a [Ceph](http://www.ceph.org) Object Storage instance with a user that has appropriate caps (capabilities) on the parts of the API that you want to access.  See the [Ceph Object Storage](http://docs.ceph.com/docs/master/radosgw/) page for more information.
+Additionally, you need to have a [Ceph](http://www.ceph.org) Object Storage
+instance with a user that has appropriate caps (capabilities) on the parts of
+the API that you want to access.  See the
+[Ceph Object Storage](http://docs.ceph.com/docs/master/radosgw/) page for more
+information.
 
+### Compatibility
+The API for different versions of Ceph RadosGW has changed over time.  While we
+endeavor to be compatible with as many versions of Ceph RadosGW there will be
+some issues that crop up over time.  We only consider the LTS versions but
+these are what we have tested on.
+
+* 1.0.5 <= Firefly
+* 1.0.6 > Firefly/Hammer
 
 ## Installation
 
