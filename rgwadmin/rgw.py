@@ -225,7 +225,7 @@ class RGWAdmin:
     def remove_user(self, uid, purge_data=False):
         parameters = 'uid=%s' % uid
         parameters += '&purge-data=%s' % purge_data
-        return self.request('delete', '/%s/user?format%s&%s' %
+        return self.request('delete', '/%s/user?format=%s&%s' %
                             (self._admin, self._response, parameters))
 
     def create_subuser(self, uid, subuser=None, secret_key=None,
