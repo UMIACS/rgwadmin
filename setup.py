@@ -22,6 +22,7 @@ strings, parsing error codes, and all that fun stuff!  It's awesome!  Enjoy!
 install_requires = [
     "requests",
     "requests-aws",
+    "qav>=0.2.8",
 ]
 
 _version_re = re.compile(r'__version__\s+=\s+(.*)')

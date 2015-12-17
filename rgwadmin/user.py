@@ -1,4 +1,5 @@
 import logging
+from qav.listpack import ListPack
 from copy import copy
 from .utils import random_password
 from .rgw import RGWAdmin
@@ -87,6 +88,9 @@ class RGWUser(object):
 
     def __repr__(self):
         return str('%s %s' % (self.__class__.__name__, self.user_id))
+
+    def __str__(self):
+        print ListPack(map(lambda x: (x, self.x), self.attributes))
 
     def diff(self):
         d = {}
