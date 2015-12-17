@@ -41,6 +41,20 @@ class RGWAdmin:
         else:
             self._protocol = 'http'
 
+    @classmethod
+    def connect(cls, **kwargs):
+        # set the connection on RGWAdmin
+        # note: only one connection can be active in any single process
+        cls.set_connection(RGWAdmin(**kwargs))
+
+    @classmethod
+    def set_connection(cls, connection):
+        cls.connection = connection
+
+    @classmethod
+    def get_connection(cls):
+        return cls.connection
+
     def __repr__(self):
         return "%s (%s)" % (self.__class__.__name__, self.get_base_url())
 
@@ -49,7 +63,8 @@ class RGWAdmin:
         returning += '\nAccess Key: %s\n' % self._access_key
         returning += 'Secret Key: ******\n'
         returning += 'Response Method: %s\n' % self._response
-        returning += 'CA Bundle: %s\n' % self._ca_bundle
+        if self._ca_bundle is not None:
+            returning += 'CA Bundle: %s\n' % self._ca_bundle
         return returning
 
     def get_base_url(self):
