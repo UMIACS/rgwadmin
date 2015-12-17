@@ -244,13 +244,14 @@ class RGWAdmin:
                             (self._admin, self._response, parameters))
 
     def create_subuser(self, uid, subuser=None, secret_key=None,
-                       key_type='s3', access=None, generate_secret=False):
+                       key_type=None, access=None, generate_secret=False):
         parameters = 'uid=%s' % uid
         if subuser is not None:
             parameters += '&subuser=%s' % subuser
         if secret_key is not None:
             parameters += '&secret-key=%s' % secret_key
-        parameters += '&key-type=%s' % key_type
+        if key_type is not None and key_type.lower() in ['s3', 'swift']:
+            parameters += '&key-type=%s' % key_type
         if access is not None:
             parameters += '&access=%s' % access
         parameters += '&generate-secret=%s' % generate_secret
