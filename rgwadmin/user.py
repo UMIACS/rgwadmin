@@ -34,12 +34,25 @@ class RGWKey(object):
 
 
 class RGWSubuser(object):
-    def __init__(self, id, permissions):
+    permissions = ['read', 'write', 'readwrite', 'full']
+
+    def __init__(self, id, permission):
         self.id = id
-        self.permissions = permissions
+        self.permission = permission
 
     def __repr__(self):
         return str('%s %s' % (self.__class__.__name__, self.id))
+
+    @property
+    def permission(self):
+        return self._permission
+
+    @permission.setter
+    def permission(self, value):
+        if value in self.permissions:
+            self._permission = value
+        else:
+            raise AttributeError
 
 
 class RGWSwiftKey(object):
