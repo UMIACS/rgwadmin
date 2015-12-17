@@ -90,7 +90,7 @@ class RGWUser(object):
         return str('%s %s' % (self.__class__.__name__, self.user_id))
 
     def __str__(self):
-        print ListPack(map(lambda x: (x, self.x), self.attributes))
+        print ListPack(map(lambda x: (x, getattr(self, x)), self.attributes))
 
     def diff(self):
         d = {}
