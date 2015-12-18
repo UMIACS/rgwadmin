@@ -1,26 +1,19 @@
 #!/usr/bin/env python
 
-import os
 import logging
 import rgwadmin
 import unittest
 import random
 from rgwadmin.exceptions import BucketAlreadyExists
+from rgwadmin.utils import get_environment_creds
 
 logging.basicConfig(level=logging.WARNING)
-
-access_key = os.environ['OBJ_ACCESS_KEY_ID']
-secret_key = os.environ['OBJ_SECRET_ACCESS_KEY']
-server = os.environ['OBJ_SERVER']
 
 
 class RGWAdminTest(unittest.TestCase):
 
     def setUp(self):
-        self.rgw = rgwadmin.RGWAdmin(access_key,
-                                     secret_key,
-                                     server,
-                                     secure=True)
+        self.rgw = rgwadmin.RGWAdmin(**get_environment_creds())
         self.user1 = 'foo1209'
         self.user2 = 'foo1213'
         self.user3 = 'bar3142'
