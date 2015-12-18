@@ -5,7 +5,7 @@ This is a Python library to allow access to the Ceph Object Storage Admin API.
 http://docs.ceph.com/docs/master/radosgw/adminops/
 
 
-## Example Usage
+## API Example Usage
 
 ```python
 from rgwadmin import RGWAdmin
@@ -25,6 +25,17 @@ rgw.set_quota(
 rgw.remove_user(uid='liam', purge_data=True)
 ```
 
+## User Example Usage
+```python
+from rgwadmin import RGWAdmin, RGWUser
+
+RGWAdmin.connect(access_key='XXX', secret_key='XXX', server='obj.example.com')
+u = RGWUser.create(user_id='test', display_name='Test User')
+u.user_quota.size = 1024 * 1024  # in bytes
+u.user_quota.enabled = True
+u.save()
+u.delete()
+```
 
 ## Requirements
 
@@ -32,6 +43,10 @@ rgwadmin requires the following Python packages:
 
  * [requests](http://python-requests.org/)
  * [requests-aws](https://github.com/tax/python-requests-aws)
+
+ If you are running python < 2.7 you will need a backport of collections
+ ordereddict.
+ * [ordereddict](https://pypi.python.org/pypi/ordereddict)
 
 Additionally, you need to have a [Ceph](http://www.ceph.org) Object Storage
 instance with a user that has appropriate caps (capabilities) on the parts of
@@ -47,6 +62,7 @@ these are what we have tested on.
 
 * 1.0.5 <= Firefly
 * 1.0.6 > Firefly/Hammer
+* 1.1 > Hammer
 
 ## Installation
 
