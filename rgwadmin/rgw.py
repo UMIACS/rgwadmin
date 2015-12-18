@@ -93,6 +93,8 @@ class RGWAdmin:
                     break
         if r.status_code == requests.codes.ok:
             return j
+        elif r.status_code == requests.codes.no_content:
+            return None
         else:
             if j is not None:
                 log.error(j)
@@ -111,7 +113,7 @@ class RGWAdmin:
                     raise e
             raise RGWAdminException(code)
 
-    def request(self, method, request, data=None):
+    def request(self, method, request, headers=None, data=None):
         url = '%s%s' % (self.get_base_url(), request)
         log.debug('URL: %s' % url)
         log.debug('Access Key: %s' % self._access_key)
@@ -123,13 +125,29 @@ class RGWAdmin:
                 verify = self._ca_bundle
             else:
                 verify = self._verify
-            r = m(url, auth=S3Auth(self._access_key,
-                  self._secret_key, self._server),
-                  verify=verify)
+            auth = S3Auth(self._access_key, self._secret_key, self._server)
+            r = m(url, headers=headers, auth=auth, verify=verify, data=data)
         except Exception as e:
             log.exception(e)
             return None
         return self._load_request(r)
+
+    def get_metadata(self, metadata_type, key):
+        ''' Returns JSON '''
+        if metadata_type in ['user', 'bucket']:
+            return self.request(
+                'get', '/%s/metadata/%s?format=%s&key=%s' %
+                (self._admin, metadata_type, self._response, key)
+            )
+
+    def set_metadata(self, metadata_type, key, json_string):
+        if metadata_type in ['user', 'bucket']:
+            return self.request(
+                'put', '/%s/metadata/%s?key=%s' %
+                (self._admin, metadata_type, key),
+                headers={'Content-Type': 'application/json'},
+                data=json_string,
+            )
 
     def get_user(self, uid):
         return self.request('get', '/%s/user?format=%s&uid=%s' %
@@ -244,17 +262,20 @@ class RGWAdmin:
                             (self._admin, self._response, parameters))
 
     def create_subuser(self, uid, subuser=None, secret_key=None,
-                       key_type=None, access=None, generate_secret=False):
+                       access_key=None, key_type=None, access=None,
+                       generate_secret=False):
         parameters = 'uid=%s' % uid
         if subuser is not None:
             parameters += '&subuser=%s' % subuser
-        if secret_key is not None:
+        if secret_key is not None and access_key is not None:
+            parameters += '&access-key=%s' % access_key
             parameters += '&secret-key=%s' % secret_key
         if key_type is not None and key_type.lower() in ['s3', 'swift']:
             parameters += '&key-type=%s' % key_type
         if access is not None:
             parameters += '&access=%s' % access
-        parameters += '&generate-secret=%s' % generate_secret
+        if generate_secret:
+            parameters += '&generate-secret=%s' % generate_secret
         return self.request('put', '/%s/user?subuser&format=%s&%s' %
                             (self._admin, self._response, parameters))
 
