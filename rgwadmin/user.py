@@ -210,7 +210,7 @@ class RGWUser(AttributeMixin):
     @classmethod
     def list(cls):
         rgw = RGWAdmin.get_connection()
-        return map(lambda x: cls._parse_user(rgw.get_user(x)), rgw.get_users())
+        return map(lambda x: cls.fetch(x), rgw.get_users())
 
     @classmethod
     def fetch(cls, user):
