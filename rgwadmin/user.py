@@ -232,9 +232,9 @@ class RGWUser(AttributeMixin):
         if not set(map(lambda x: unicode(x), cls.attrs)) <= \
                 set(rgw_user.keys()):
             return None
-        log.info('Parsing RGWUser %s' % rgw_user)
+        log.debug('Parsing RGWUser %s' % rgw_user)
         for subattr in cls.sub_attrs.keys():
-            log.info('Loading attribute %s with class %s' %
+            log.debug('Loading attribute %s with class %s' %
                      (subattr, cls.sub_attrs[subattr].__name__))
             if type(rgw_user[subattr]) is list:
                 obj = map(lambda x: cls.sub_attrs[subattr](**x),
