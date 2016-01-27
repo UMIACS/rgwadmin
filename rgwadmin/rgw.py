@@ -322,6 +322,10 @@ class RGWAdmin:
         return self.request('delete', '/%s/user?key&format=%s&%s' %
                             (self._admin, self._response, parameters))
 
+    def get_buckets(self):
+        return self.request('get', '/%s/metadata/bucket?format=%s' %
+                            (self._admin, self._response))
+
     def get_bucket(self, bucket=None, uid=None, stats=False):
         parameters = ''
         if bucket is not None:
