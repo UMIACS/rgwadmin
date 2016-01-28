@@ -329,6 +329,7 @@ class RGWAdmin:
                             (self._admin, self._response, parameters))
 
     def get_buckets(self):
+        '''Returns a list of all buckets in the radosgw'''
         return self.get_metadata(metadata_type='bucket')
 
     def get_bucket(self, bucket=None, uid=None, stats=False):
