@@ -138,7 +138,7 @@ class RGWAdmin:
         ''' Returns a JSON object '''
         if metadata_type in ['user', 'bucket']:
             request_string = '/%s/metadata/%s?format=%s' % \
-                (self._admin, metadata_type)
+                (self._admin, metadata_type, self._response)
             if key is not None:
                 request_string += 'key=%s' % key
             return self.request('get', request_string)
