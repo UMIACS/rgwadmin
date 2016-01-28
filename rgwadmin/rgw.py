@@ -24,6 +24,8 @@ log = logging.getLogger(__name__)
 
 class RGWAdmin:
 
+    metadata_types = ['user', 'bucket']
+
     def __init__(self, access_key, secret_key, server,
                  admin='admin', response='json', ca_bundle=None,
                  secure=True, verify=True):
@@ -132,30 +134,34 @@ class RGWAdmin:
             return None
         return self._load_request(r)
 
-    def get_metadata(self, metadata_type, key):
-        ''' Returns JSON '''
+    def get_metadata(self, metadata_type, key=None):
+        ''' Returns a JSON object '''
         if metadata_type in ['user', 'bucket']:
-            return self.request(
-                'get', '/%s/metadata/%s?format=%s&key=%s' %
-                (self._admin, metadata_type, self._response, key)
-            )
+            request_string = '/%s/metadata/%s?format=%s' % \
+                (self._admin, metadata_type)
+            if key is not None:
+                request_string += 'key=%s' % key
+            return self.request('get', request_string)
+        else:
+            return None
 
     def set_metadata(self, metadata_type, key, json_string):
-        if metadata_type in ['user', 'bucket']:
+        if metadata_type in self.metadata_types:
             return self.request(
                 'put', '/%s/metadata/%s?key=%s' %
                 (self._admin, metadata_type, key),
                 headers={'Content-Type': 'application/json'},
                 data=json_string,
             )
+        else:
+            return None
 
     def get_user(self, uid):
         return self.request('get', '/%s/user?format=%s&uid=%s' %
                             (self._admin, self._response, uid))
 
     def get_users(self):
-        return self.request('get', '/%s/metadata/user?format=%s' %
-                            (self._admin, self._response))
+        return self.get_metadata(metadata_type='user')
 
     def create_user(self, uid, display_name, email=None, key_type='s3',
                     access_key=None, secret_key=None, user_caps=None,
@@ -323,8 +329,7 @@ class RGWAdmin:
                             (self._admin, self._response, parameters))
 
     def get_buckets(self):
-        return self.request('get', '/%s/metadata/bucket?format=%s' %
-                            (self._admin, self._response))
+        return self.get_metadata(metadata_type='bucket')
 
     def get_bucket(self, bucket=None, uid=None, stats=False):
         parameters = ''
