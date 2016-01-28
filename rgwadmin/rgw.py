@@ -131,7 +131,7 @@ class RGWAdmin:
             r = m(url, headers=headers, auth=auth, verify=verify, data=data)
         except Exception as e:
             log.exception(e)
-            return None
+            raise
         return self._load_request(r)
 
     def get_metadata(self, metadata_type, key=None):
