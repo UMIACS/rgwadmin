@@ -192,7 +192,7 @@ class RGWUser(AttributeMixin):
         else:
             # only replace the data with our local object
             existing['data'] = self.to_dict()
-            log.info('Saving %s' % existing)
+            log.info('Saving %s' % self._scrub_sensitive_attrs(existing))
             rgw.set_metadata('user', self.user_id, json.dumps(existing))
 
     def delete(self):
@@ -235,7 +235,7 @@ class RGWUser(AttributeMixin):
         log.debug('Parsing RGWUser %s' % rgw_user)
         for subattr in cls.sub_attrs.keys():
             log.debug('Loading attribute %s with class %s' %
-                     (subattr, cls.sub_attrs[subattr].__name__))
+                      (subattr, cls.sub_attrs[subattr].__name__))
             if type(rgw_user[subattr]) is list:
                 obj = map(lambda x: cls.sub_attrs[subattr](**x),
                           rgw_user[subattr])
@@ -245,6 +245,14 @@ class RGWUser(AttributeMixin):
                 obj = rgw_user[subattr]
             rgw_user[subattr] = obj
         return RGWUser(**rgw_user)
+
+    def _scrub_sensitive_attrs(user_dict):
+        scrubbed = user_dict.copy()
+        for k, v in scrubbed.iteritems():
+            if k == 'keys':
+                for keypair in v:
+                    keypair['secret_key'] = '*******'
+        return scrubbed
 
     def to_dict(self):
         '''Return the dict representation of the object'''
