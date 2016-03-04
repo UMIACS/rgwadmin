@@ -17,7 +17,11 @@ class RGWUserTest(unittest.TestCase):
     def test_create_user(self):
         user_id = id_generator()
         display_name = id_generator(25)
-        u = RGWUser.create(user_id=user_id, display_name=display_name)
+        print (user_id, display_name)
+        u = RGWUser.create(user_id=user_id,
+                           display_name=display_name,
+                           email="{}@test.com".format(user_id))
+
         self.assertTrue(u.user_id == user_id and
                         u.display_name == display_name)
         u.delete()

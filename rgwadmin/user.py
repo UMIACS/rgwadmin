@@ -11,6 +11,12 @@ from .exceptions import NoSuchKey
 log = logging.getLogger(__name__)
 
 
+try:
+    unicode
+except:
+    unicode = str
+
+
 class AttributeMixin(object):
     attrs = []
 
@@ -106,7 +112,10 @@ class RGWQuota(AttributeMixin):
 
     def __init__(self, **kwargs):
         for attr in self.attrs:
-            setattr(self, attr, kwargs[attr])
+            if attr in kwargs:
+                setattr(self, attr, kwargs[attr])
+            elif attr in self.defaults:
+                setattr(self, attr, self.defaults[attr])
 
     def __repr__(self):
         return '%s %s/%s' % (self.enabled, self.max_objects,
@@ -153,7 +162,10 @@ class RGWUser(AttributeMixin):
     """Representation of a RadosGW User"""
     def __init__(self, **kwargs):
         for attr in self.attrs:
-            setattr(self, attr, kwargs[attr])
+            if attr in kwargs:
+                setattr(self, attr, kwargs[attr])
+            elif attr in self.sub_attrs:
+                setattr(self, attr, self.sub_attrs[attr]())
 
     def __repr__(self):
         return str('%s %s' % (self.__class__.__name__, self.user_id))
@@ -161,17 +173,18 @@ class RGWUser(AttributeMixin):
     @classmethod
     def create(cls, user_id, display_name, **kwargs):
         rgw = RGWAdmin.get_connection()
-        rgw.create_user(uid=user_id,
-                        display_name=display_name,
-                        **kwargs)
-        return cls.fetch(user_id)
+        r = rgw.create_user(uid=user_id,
+                            display_name=display_name,
+                            **kwargs)
+        print ('create_user resp', r)
+        return cls(**r)
 
     def diff(self):
         rgw = RGWAdmin.get_connection()
         d = {}
         current = self.to_dict()
         try:
-            existing = rgw.get_metadata('user', self.user_id)['data']
+            existing = rgw.get_metadata('user', self.user_id)
         except NoSuchKey:
             logging.info('Unable to fetch the user %s.' % self.user_id)
             return current
@@ -184,16 +197,19 @@ class RGWUser(AttributeMixin):
     def save(self):
         rgw = RGWAdmin.get_connection()
         try:
-            existing = rgw.get_metadata('user', self.user_id)
+            existing = self.fetch(self.user_id)
+            print("existing", existing)
         except NoSuchKey:
             # create a new user first before we save the full object
             rgw.create_user(user_id=self.user_id,
                             display_name=self.display_name)
         else:
             # only replace the data with our local object
-            existing['data'] = self.to_dict()
+            existing = self.to_dict()
             log.info('Saving %s' % existing)
-            rgw.set_metadata('user', self.user_id, json.dumps(existing))
+            print("existing", existing)
+            rgw.modify_user(**existing)
+            # rgw.set_metadata('user', self.user_id, json.dumps(existing))
 
     def delete(self):
         rgw = RGWAdmin.get_connection()
@@ -216,17 +232,17 @@ class RGWUser(AttributeMixin):
     def fetch(cls, user):
         rgw = RGWAdmin.get_connection()
         try:
-            j = rgw.get_metadata('user', user)
+            j = rgw.get_user(user)
         except NoSuchKey:
             return None
         else:
-            return cls._parse_user(j['data'])
+            return cls._parse_user(j)
 
     @classmethod
     def _parse_user(cls, rgw_user):
         # we expect to be passed a dict
         if type(rgw_user) is not dict:
-            print 'no dict'
+            print('no dict')
             return None
         # check to make sure we have all the correct keys
         if not set(map(lambda x: unicode(x), cls.attrs)) <= \
@@ -250,13 +266,11 @@ class RGWUser(AttributeMixin):
         '''Return the dict representation of the object'''
         d = {}
         for attr in self.attrs:
-            if attr in self.sub_attrs.keys():
+            if hasattr(self, attr) and attr in self.sub_attrs.keys():
                 if type(getattr(self, attr)) is list:
                     d[attr] = []
                     for o in getattr(self, attr):
-                        d[attr].append(o.to_dict())
+                        d[attr].append(o)
                 else:
-                    d[attr] = getattr(self, attr).to_dict()
-            else:
-                d[attr] = getattr(self, attr)
+                    d[attr] = getattr(self, attr).__dict__
         return d
