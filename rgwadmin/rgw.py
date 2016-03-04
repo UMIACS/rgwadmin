@@ -1,6 +1,9 @@
 import time
 import json
-from StringIO import StringIO
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 import logging
 import string
 import random
@@ -20,6 +23,10 @@ from .exceptions import (
 )
 
 log = logging.getLogger(__name__)
+try:
+    LETTERS = string.ascii_letters
+except AttributeError:
+    LETTERS = string.letters
 
 
 class RGWAdmin:
@@ -28,11 +35,12 @@ class RGWAdmin:
 
     def __init__(self, access_key, secret_key, server,
                  admin='admin', response='json', ca_bundle=None,
-                 secure=True, verify=True):
+                 secure=True, verify=True, port=443):
         self._access_key = access_key
         self._secret_key = secret_key
         self._server = server
         self._admin = admin
+        self._port = int(port)
         self._response = response
 
         # ssl support
@@ -71,12 +79,14 @@ class RGWAdmin:
 
     def get_base_url(self):
         '''Return a base URL.  I.e. https://ceph.server'''
+        if self._port not in (80, 443):
+            return '%s://%s:%s' % (self._protocol, self._server, self._port)
         return '%s://%s' % (self._protocol, self._server)
 
     def _load_request(self, r):
         '''Load the request given as JSON handling exceptions if necessary'''
         try:
-            j = json.load(StringIO(r.content))
+            j = r.json()
         except ValueError as e:
             # some calls in the admin API encode the info in the headers
             # instead of the body.  The code that follows is an ugly hack
@@ -396,5 +406,5 @@ class RGWAdmin:
         return time.strptime(s, "%Y-%m-%dT%H:%M:%S.000Z")
 
     @staticmethod
-    def gen_secret_key(size=40, chars=string.letters + string.digits):
+    def gen_secret_key(size=40, chars=LETTERS + string.digits):
         return ''.join(random.choice(chars) for x in range(size))

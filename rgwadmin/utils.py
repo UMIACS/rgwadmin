@@ -19,9 +19,18 @@ def random_password(size=40, chars=None):
 
 
 def get_environment_creds():
+    secure = os.environ.get('OBJ_SERVER_SECURE', True)
+    if secure is not True and secure == 'false':
+        secure = False
+    verify = os.environ.get('OBJ_SERVER_VERIFY', True)
+    if verify is not True and verify == 'false':
+        verify = False
     return {'access_key': os.environ['OBJ_ACCESS_KEY_ID'],
             'secret_key': os.environ['OBJ_SECRET_ACCESS_KEY'],
-            'server': os.environ['OBJ_SERVER']}
+            'server': os.environ['OBJ_SERVER'],
+            'port': os.environ.get('OBJ_SERVER_PORT', 443),
+            'secure': secure,
+            'verify': verify}
 
 
 def id_generator(size=6, chars=None):
