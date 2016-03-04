@@ -192,7 +192,7 @@ class RGWUser(AttributeMixin):
         else:
             # only replace the data with our local object
             existing['data'] = self.to_dict()
-            log.info('Saving %s' % self._scrub_sensitive_attrs(existing))
+            log.info('Saving %s' % self._scrubbed_dict())
             rgw.set_metadata('user', self.user_id, json.dumps(existing))
 
     def delete(self):
@@ -246,8 +246,11 @@ class RGWUser(AttributeMixin):
             rgw_user[subattr] = obj
         return RGWUser(**rgw_user)
 
-    def _scrub_sensitive_attrs(user_dict):
-        scrubbed = user_dict.copy()
+    def _scrubbed_dict(self):
+        '''Return a dict representaiton of the object with sensitve attrs
+           filtered
+        '''
+        scrubbed = self.to_dict()
         for k, v in scrubbed.iteritems():
             if k == 'keys':
                 for keypair in v:
