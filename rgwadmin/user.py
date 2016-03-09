@@ -152,8 +152,11 @@ class RGWUser(AttributeMixin):
 
     """Representation of a RadosGW User"""
     def __init__(self, **kwargs):
+        self.sensitive_attrs = [('keys', 'secret_key')]
         for attr in self.attrs:
             setattr(self, attr, kwargs[attr])
+        if kwargs.get('sensitive_attrs'):
+            self.sensitive_attrs.append(kwargs.get('sensitive_attrs'))
 
     def __repr__(self):
         return str('%s %s' % (self.__class__.__name__, self.user_id))
@@ -247,14 +250,17 @@ class RGWUser(AttributeMixin):
         return RGWUser(**rgw_user)
 
     def _scrubbed_dict(self):
-        '''Return a dict representaiton of the object with sensitve attrs
-           filtered
+        '''Return a dict representation of the object with sensitve attrs
+           filtered.
         '''
         scrubbed = self.to_dict()
-        for k, v in scrubbed.iteritems():
-            if k == 'keys':
-                for keypair in v:
-                    keypair['secret_key'] = '*******'
+        censor = '******'
+        for k, v in self.sensitive_attrs:
+            if type(scrubbed[k]) is list:
+                for o in scrubbed[k]:
+                    o[v] = censor
+            else:
+                scrubbed[k] = censor
         return scrubbed
 
     def to_dict(self):
