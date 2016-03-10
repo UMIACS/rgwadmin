@@ -152,8 +152,11 @@ class RGWUser(AttributeMixin):
 
     """Representation of a RadosGW User"""
     def __init__(self, **kwargs):
+        self.sensitive_attrs = [('keys', 'secret_key')]
         for attr in self.attrs:
             setattr(self, attr, kwargs[attr])
+        if kwargs.get('sensitive_attrs'):
+            self.sensitive_attrs.append(kwargs.get('sensitive_attrs'))
 
     def __repr__(self):
         return str('%s %s' % (self.__class__.__name__, self.user_id))
@@ -192,7 +195,7 @@ class RGWUser(AttributeMixin):
         else:
             # only replace the data with our local object
             existing['data'] = self.to_dict()
-            log.info('Saving %s' % existing)
+            log.info('Saving %s' % self._scrubbed_dict())
             rgw.set_metadata('user', self.user_id, json.dumps(existing))
 
     def delete(self):
@@ -235,7 +238,7 @@ class RGWUser(AttributeMixin):
         log.debug('Parsing RGWUser %s' % rgw_user)
         for subattr in cls.sub_attrs.keys():
             log.debug('Loading attribute %s with class %s' %
-                     (subattr, cls.sub_attrs[subattr].__name__))
+                      (subattr, cls.sub_attrs[subattr].__name__))
             if type(rgw_user[subattr]) is list:
                 obj = map(lambda x: cls.sub_attrs[subattr](**x),
                           rgw_user[subattr])
@@ -245,6 +248,20 @@ class RGWUser(AttributeMixin):
                 obj = rgw_user[subattr]
             rgw_user[subattr] = obj
         return RGWUser(**rgw_user)
+
+    def _scrubbed_dict(self):
+        '''Return a dict representation of the object with sensitve attrs
+           filtered.
+        '''
+        scrubbed = self.to_dict()
+        censor = '******'
+        for k, v in self.sensitive_attrs:
+            if type(scrubbed[k]) is list:
+                for o in scrubbed[k]:
+                    o[v] = censor
+            else:
+                scrubbed[k] = censor
+        return scrubbed
 
     def to_dict(self):
         '''Return the dict representation of the object'''
