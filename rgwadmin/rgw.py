@@ -100,7 +100,7 @@ class RGWAdmin:
         else:
             if j is not None:
                 log.error(j)
-                code = str(j['Code'])
+                code = str(j.get('Code', 'InternalError'))
             else:
                 raise ServerDown
             for e in [AccessDenied, UserExists, InvalidAccessKey,
