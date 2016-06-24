@@ -393,7 +393,7 @@ class RGWAdmin:
 
     @staticmethod
     def parse_rados_datestring(s):
-        return time.strptime(s, "%Y-%m-%dT%H:%M:%S.000Z")
+        return time.strptime(s, "%Y-%m-%dT%H:%M:%S.%fZ")
 
     @staticmethod
     def gen_secret_key(size=40, chars=string.letters + string.digits):
