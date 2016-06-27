@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.WARNING)
 
 class RGWUserTest(unittest.TestCase):
     def setUp(self):
-        rgw = rgwadmin.RGWAdmin(**get_environment_creds())
+        rgw = rgwadmin.RGWAdmin(secure=False, verify=False, **get_environment_creds())
         rgwadmin.RGWAdmin.set_connection(rgw)
 
     def test_create_user(self):

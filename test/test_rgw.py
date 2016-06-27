@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.WARNING)
 class RGWAdminTest(unittest.TestCase):
 
     def setUp(self):
-        self.rgw = rgwadmin.RGWAdmin(**get_environment_creds())
+        self.rgw = rgwadmin.RGWAdmin(secure=False, verify=False, **get_environment_creds())
         self.user1 = 'foo1209'
         self.user2 = 'foo1213'
         self.user3 = 'bar3142'
@@ -40,7 +40,6 @@ class RGWAdminTest(unittest.TestCase):
         self.assertTrue(user['email'] == '%s@test.com' % self.user1)
 
     def test_duplicate_email(self):
-        # http://tracker.ceph.com/issues/13635
         with self.assertRaises(EmailExists):
             self.rgw.create_user(uid=self.user3,
                                  email='%s@example.com' % self.user1,
@@ -101,6 +100,9 @@ class RGWAdminTest(unittest.TestCase):
         for key in keys:
             if key['access_key'] == access:
                 self.assertTrue(key['secret_key'] == secret)
+
+    def test_parse_rados_datestring(self):
+	rgwadmin.RGWAdmin.parse_rados_datestring(u'2016-06-27T16:06:39.163Z')
 
 
 if __name__ == '__main__':
