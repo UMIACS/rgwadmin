@@ -4,7 +4,7 @@ import logging
 import rgwadmin
 import unittest
 import random
-from rgwadmin.exceptions import BucketAlreadyExists
+from rgwadmin.exceptions import EmailExists
 from rgwadmin.utils import get_environment_creds
 
 logging.basicConfig(level=logging.WARNING)
@@ -40,9 +40,8 @@ class RGWAdminTest(unittest.TestCase):
         self.assertTrue(user['email'] == '%s@test.com' % self.user1)
 
     def test_duplicate_email(self):
-        # NOTE: this exception is wrong and should be fixed at some point
-        # in the future in Ceph http://tracker.ceph.com/issues/13635
-        with self.assertRaises(BucketAlreadyExists):
+        # http://tracker.ceph.com/issues/13635
+        with self.assertRaises(EmailExists):
             self.rgw.create_user(uid=self.user3,
                                  email='%s@example.com' % self.user1,
                                  display_name='Unit Test %s' % self.user3,
