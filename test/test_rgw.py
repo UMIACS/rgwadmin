@@ -4,7 +4,7 @@ import logging
 import rgwadmin
 import unittest
 import random
-from rgwadmin.exceptions import BucketAlreadyExists, EmailExists
+from rgwadmin.exceptions import EmailExists
 from rgwadmin.utils import get_environment_creds
 
 logging.basicConfig(level=logging.WARNING)
