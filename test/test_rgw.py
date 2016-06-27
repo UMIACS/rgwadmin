@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.WARNING)
 class RGWAdminTest(unittest.TestCase):
 
     def setUp(self):
-        self.rgw = rgwadmin.RGWAdmin(secure=False, **get_environment_creds())
+        self.rgw = rgwadmin.RGWAdmin(secure=False, verify=False, **get_environment_creds())
         self.user1 = 'foo1209'
         self.user2 = 'foo1213'
         self.user3 = 'bar3142'
