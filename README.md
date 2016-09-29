@@ -63,6 +63,7 @@ these are what we have tested on.
 * 1.0.5 <= Firefly
 * 1.0.6 > Firefly/Hammer
 * 1.1 > Hammer
+* 1.1.5 > Jewel
 
 ## Installation
 
