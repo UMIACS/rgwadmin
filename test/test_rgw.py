@@ -102,7 +102,7 @@ class RGWAdminTest(unittest.TestCase):
                 self.assertTrue(key['secret_key'] == secret)
 
     def test_parse_rados_datestring(self):
-	rgwadmin.RGWAdmin.parse_rados_datestring(u'2016-06-27T16:06:39.163Z')
+        rgwadmin.RGWAdmin.parse_rados_datestring(u'2016-06-27T16:06:39.163Z')
 
 
 if __name__ == '__main__':
