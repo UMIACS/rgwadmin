@@ -1,5 +1,5 @@
 __title__ = 'rgwadmin'
-__version__ = "1.1.5"
+__version__ = "1.1.6"
 __author__ = 'Derek Yarnell'
 __license__ = 'LGPL v2.1'
 
