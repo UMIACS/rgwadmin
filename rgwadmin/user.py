@@ -59,7 +59,7 @@ class RGWKey(AttributeMixin):
 
 class RGWSubuser(AttributeMixin):
     attrs = ['id', 'permissions']
-    permission_list = ['read', 'write', 'readwrite', 'full']
+    permission_list = ['read', 'write', 'read-write', 'full-control']
 
     def __init__(self, id, permissions):
         self.id = id
