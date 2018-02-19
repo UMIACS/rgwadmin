@@ -10,6 +10,10 @@ from .exceptions import NoSuchKey
 
 log = logging.getLogger(__name__)
 
+try:
+    unicode
+except:
+    unicode = str
 
 class AttributeMixin(object):
     attrs = []
@@ -22,7 +26,7 @@ class AttributeMixin(object):
         return str(ListPack(self.to_tuples()))
 
     def to_tuples(self):
-        return map(lambda x: (x, getattr(self, x)), self.attrs)
+        return [(x, getattr(self, x)) for x in self.attrs]
 
     def to_dict(self):
         return dict(self.to_tuples())
@@ -143,6 +147,8 @@ class RGWUser(AttributeMixin):
              'max_buckets', 'suspended', 'swift_keys', 'subusers',
              'placement_tags', 'auid', 'bucket_quota', 'user_quota',
              'default_placement', 'op_mask', 'temp_url_keys']
+    modify_attrs_mask = ['placement_tags', 'auid', 'default_placement',
+                         'op_mask', 'temp_url_keys']
     sub_attrs = OrderedDict([('caps', RGWCap),
                              ('keys', RGWKey),
                              ('swift_keys', RGWSwiftKey),
@@ -164,6 +170,7 @@ class RGWUser(AttributeMixin):
     @classmethod
     def create(cls, user_id, display_name, **kwargs):
         rgw = RGWAdmin.get_connection()
+        log.debug('Creating user %s' % user_id)
         rgw.create_user(uid=user_id,
                         display_name=display_name,
                         **kwargs)
@@ -187,16 +194,19 @@ class RGWUser(AttributeMixin):
     def save(self):
         rgw = RGWAdmin.get_connection()
         try:
-            existing = rgw.get_metadata('user', self.user_id)
+            self.fetch(self.user_id)
         except NoSuchKey:
             # create a new user first before we save the full object
+            log.debug('User does not exist. Creating %s' % self.user_id)
             rgw.create_user(user_id=self.user_id,
                             display_name=self.display_name)
         else:
             # only replace the data with our local object
-            existing['data'] = self.to_dict()
-            log.info('Saving %s' % self._scrubbed_dict())
-            rgw.set_metadata('user', self.user_id, json.dumps(existing))
+            d = self._modify_dict()
+            log.debug('Modify existing user %s %s' % (self.user_id, d))
+            rgw.modify_user(**d)
+            rgw.set_quota(self.user_id, 'user', **self.user_quota.to_dict())
+            rgw.set_quota(self.user_id, 'bucket', **self.bucket_quota.to_dict())
 
     def delete(self):
         rgw = RGWAdmin.get_connection()
@@ -213,10 +223,11 @@ class RGWUser(AttributeMixin):
     @classmethod
     def list(cls):
         rgw = RGWAdmin.get_connection()
-        return map(lambda x: cls.fetch(x), rgw.get_users())
+        return [cls.fetch(x) for x in rgw.get_users()]
 
     @classmethod
     def fetch(cls, user):
+        log.debug('Fetching user %s' % user)
         rgw = RGWAdmin.get_connection()
         try:
             j = rgw.get_metadata('user', user)
@@ -229,7 +240,7 @@ class RGWUser(AttributeMixin):
     def _parse_user(cls, rgw_user):
         # we expect to be passed a dict
         if type(rgw_user) is not dict:
-            print 'no dict'
+            log.warning('rgw_user is not a dict instance')
             return None
         # check to make sure we have all the correct keys
         if not set(map(lambda x: unicode(x), cls.attrs)) <= \
@@ -240,8 +251,7 @@ class RGWUser(AttributeMixin):
             log.debug('Loading attribute %s with class %s' %
                       (subattr, cls.sub_attrs[subattr].__name__))
             if type(rgw_user[subattr]) is list:
-                obj = map(lambda x: cls.sub_attrs[subattr](**x),
-                          rgw_user[subattr])
+                obj = [cls.sub_attrs[subattr](**x) for x in rgw_user[subattr]]
             elif type(rgw_user[subattr]) is dict:
                 obj = cls.sub_attrs[subattr](**rgw_user[subattr])
             else:
@@ -262,6 +272,16 @@ class RGWUser(AttributeMixin):
             else:
                 scrubbed[k] = censor
         return scrubbed
+
+    def _modify_dict(self):
+        '''Return flat dict representation of the object'''
+        d = {}
+        for attr in self.attrs:
+            if not attr in self.modify_attrs_mask+list(self.sub_attrs.keys()):
+                d[attr] = getattr(self, attr)
+        d['uid'] = d.pop('user_id')
+        d['generate_key'] = False
+        return d
 
     def to_dict(self):
         '''Return the dict representation of the object'''

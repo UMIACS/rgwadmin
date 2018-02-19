@@ -1,6 +1,9 @@
 import time
 import json
-from StringIO import StringIO
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 import logging
 import string
 import random
@@ -20,7 +23,10 @@ from .exceptions import (
 )
 
 log = logging.getLogger(__name__)
-
+try:
+    LETTERS = string.ascii_letters
+except AttributeError:
+    LETTERS = string.letters
 
 class RGWAdmin:
 
@@ -76,7 +82,7 @@ class RGWAdmin:
     def _load_request(self, r):
         '''Load the request given as JSON handling exceptions if necessary'''
         try:
-            j = json.load(StringIO(r.content))
+            j = r.json()
         except ValueError as e:
             # some calls in the admin API encode the info in the headers
             # instead of the body.  The code that follows is an ugly hack
@@ -396,5 +402,5 @@ class RGWAdmin:
         return time.strptime(s, "%Y-%m-%dT%H:%M:%S.%fZ")
 
     @staticmethod
-    def gen_secret_key(size=40, chars=string.letters + string.digits):
+    def gen_secret_key(size=40, chars=LETTERS + string.digits):
         return ''.join(random.choice(chars) for x in range(size))
