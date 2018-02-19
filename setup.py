@@ -44,5 +44,15 @@ setup(
     description="Python Rados Gateway Admin API",
     long_description=long_description,
     keywords=["ceph", "radosgw", "admin api"],
+    classifiers=[
+        'Development Status :: 5 - Production/Stable',
+	'Programming Language :: Python :: 2',
+    	'Programming Language :: Python :: 2.7',
+    	'Programming Language :: Python :: 3',
+    	'Programming Language :: Python :: 3.2',
+    	'Programming Language :: Python :: 3.3',
+    	'Programming Language :: Python :: 3.4',
+    	'Programming Language :: Python :: 3.5',
+    	'Programming Language :: Python :: 3.6'],
     **extra
 )
