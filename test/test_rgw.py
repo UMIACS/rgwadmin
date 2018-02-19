@@ -4,7 +4,7 @@ import logging
 import rgwadmin
 import unittest
 import random
-from rgwadmin.exceptions import EmailExists
+from rgwadmin.exceptions import InvalidArgument
 from rgwadmin.utils import get_environment_creds
 
 logging.basicConfig(level=logging.WARNING)
@@ -40,7 +40,7 @@ class RGWAdminTest(unittest.TestCase):
         self.assertTrue(user['email'] == '%s@test.com' % self.user1)
 
     def test_duplicate_email(self):
-        with self.assertRaises(EmailExists):
+        with self.assertRaises(InvalidArgument):
             self.rgw.create_user(uid=self.user3,
                                  email='%s@example.com' % self.user1,
                                  display_name='Unit Test %s' % self.user3,
