@@ -205,7 +205,7 @@ class RGWUser(AttributeMixin):
 
         if not self.exists():
             log.debug('User does not exist. Creating %s' % self.user_id)
-            rgw.create_user(user_id=self.user_id,
+            rgw.create_user(uid=self.user_id,
                             display_name=self.display_name)
 
         d = self._modify_dict()
