@@ -105,10 +105,10 @@ class RGWAdmin:
             return None
         else:
             if j is not None:
-                log.error(j)
+                #log.error(j)
                 code = str(j.get('Code', 'InternalError'))
             else:
-                raise ServerDown
+                raise ServerDown(None)
             for e in [AccessDenied, UserExists, InvalidAccessKey,
                       InvalidKeyType, InvalidSecretKey, KeyExists, EmailExists,
                       SubuserExists, InvalidAccess, InvalidArgument,
@@ -118,8 +118,8 @@ class RGWAdmin:
                       NoSuchKey, IncompleteBody, BucketAlreadyExists,
                       InternalError]:
                 if code == e.__name__:
-                    raise e
-            raise RGWAdminException(code)
+                    raise e(j)
+            raise RGWAdminException(code, j)
 
     def request(self, method, request, headers=None, data=None):
         url = '%s%s' % (self.get_base_url(), request)
@@ -136,8 +136,8 @@ class RGWAdmin:
             auth = S3Auth(self._access_key, self._secret_key, self._server)
             r = m(url, headers=headers, auth=auth, verify=verify, data=data)
         except Exception as e:
-            log.exception(e)
-            raise
+            #log.exception(e)
+            raise e
         return self._load_request(r)
 
     def get_metadata(self, metadata_type, key=None):
