@@ -7,6 +7,7 @@ except ImportError:
 import logging
 import string
 import random
+import urllib
 
 import requests
 from awsauth import S3Auth
@@ -140,27 +141,64 @@ class RGWAdmin:
             raise e
         return self._load_request(r)
 
-    def get_metadata(self, metadata_type, key=None):
-        ''' Returns a JSON object '''
-        if metadata_type in ['user', 'bucket']:
-            request_string = '/%s/metadata/%s?format=%s' % \
-                (self._admin, metadata_type, self._response)
-            if key is not None:
-                request_string += '&key=%s' % key
-            return self.request('get', request_string)
-        else:
-            return None
-
-    def set_metadata(self, metadata_type, key, json_string):
+    def _request_metadata(self, method, metadata_type, qp={}, headers=None, data=None):
         if metadata_type in self.metadata_types:
+            qp_str = '&'.join(['%s=%s' % (k,v) for k,v in qp.items()])
+            request = '/%s/metadata/%s?%s' % \
+                (self._admin, metadata_type, qp_str)
             return self.request(
-                'put', '/%s/metadata/%s?key=%s' %
-                (self._admin, metadata_type, key),
-                headers={'Content-Type': 'application/json'},
-                data=json_string,
+                method=method,
+                request=request,
+                headers=headers,
+                data=data
             )
         else:
-            return None
+            raise Exception("Bad metadata_type")
+
+    def get_metadata(self, metadata_type, key=None, max_entries=None, marker=None, headers=None):
+        ''' Returns a JSON object '''
+        qp = { 'format': self._response }
+        if key is not None:
+            qp['key'] = key
+        if marker is not None:
+            qp['marker'] = urllib.parse.quote(marker)
+        if max_entries is not None:
+            qp['max-entries'] = max_entries
+        return self._request_metadata('get', metadata_type, qp=qp, headers=headers)
+
+    def put_metadata(self, metadata_type, key, json_string):
+        return self._request_metadata(
+            method='put',
+            metadata_type=metadata_type,
+            qp={'key': key},
+            headers={'Content-Type': 'application/json'},
+            data=json_string)
+
+    # Alias for compatability:
+    set_metadata = put_metadata
+
+    def delete_metadata(self, metadata_type, key):
+        return self._request_metadata(
+            method='delete',
+            metadata_type=metadata_type,
+            qp={'key': key})
+
+    def lock_metadata(self, metadata_type, key, lock_id, length):
+        qp = {
+            'lock': 'lock',
+            'key': key,
+            'lock_id': lock_id,
+            'length': int(length),
+        }
+        return _request_metadata(metadata_type, 'post', qp)
+
+    def unlock_metadata(self, metadata_type, key, lock_id):
+        qp = {
+            'unlock': 'unlock',
+            'key': key,
+            'lock_id': lock_id,
+        }
+        return _request_metadata(metadata_type, 'post', qp)
 
     def get_user(self, uid):
         return self.request('get', '/%s/user?format=%s&uid=%s' %
@@ -396,6 +434,10 @@ class RGWAdmin:
         parameters = 'uid=%s&user-caps=%s' % (uid, user_caps)
         return self.request('delete', '/%s/user?caps&format=%s&%s' %
                             (self._admin, self._response, parameters))
+
+    def get_bucket_instances(self):
+        '''Returns a list of all bucket instances in the radosgw'''
+        return self.get_metadata(metadata_type='bucket.instance')
 
     @staticmethod
     def parse_rados_datestring(s):
