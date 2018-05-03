@@ -30,7 +30,7 @@ except AttributeError:
 
 class RGWAdmin:
 
-    metadata_types = ['user', 'bucket']
+    metadata_types = ['user', 'bucket', 'bucket.instance']
 
     def __init__(self, access_key, secret_key, server,
                  admin='admin', response='json', ca_bundle=None,
