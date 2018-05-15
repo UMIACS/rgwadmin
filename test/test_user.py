@@ -44,5 +44,6 @@ class RGWUserTest(unittest.TestCase):
         self.assertTrue(u.user_quota.size == nu.user_quota.size)
         nu.delete()
 
+
 if __name__ == '__main__':
     unittest.main()

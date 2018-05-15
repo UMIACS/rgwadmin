@@ -12,8 +12,9 @@ log = logging.getLogger(__name__)
 
 try:
     unicode
-except:
+except NameError:
     unicode = str
+
 
 class AttributeMixin(object):
     attrs = []
@@ -283,7 +284,7 @@ class RGWUser(AttributeMixin):
         '''Return flat dict representation of the object'''
         d = {}
         for attr in self.attrs:
-            if not attr in self.modify_attrs_mask+list(self.sub_attrs.keys()):
+            if attr not in self.modify_attrs_mask+list(self.sub_attrs.keys()):
                 d[attr] = getattr(self, attr)
         d['uid'] = d.pop('user_id')
         d['generate_key'] = False

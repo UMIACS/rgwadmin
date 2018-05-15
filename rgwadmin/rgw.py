@@ -29,6 +29,7 @@ try:
 except AttributeError:
     LETTERS = string.letters
 
+
 class RGWAdmin:
 
     metadata_types = ['user', 'bucket', 'bucket.instance']
@@ -108,7 +109,6 @@ class RGWAdmin:
             return None
         else:
             if j is not None:
-                #log.error(j)
                 code = str(j.get('Code', 'InternalError'))
             else:
                 raise ServerDown(None)
@@ -140,40 +140,47 @@ class RGWAdmin:
             r = m(url, headers=headers, auth=auth, verify=verify, data=data,
                   timeout=self._timeout)
         except Exception as e:
-            #log.exception(e)
             raise e
         return self._load_request(r)
 
-    def _request_metadata(self, method, metadata_type, qp={}, headers=None, data=None):
-        if metadata_type in self.metadata_types:
-            qp_str = '&'.join(['%s=%s' % (k,v) for k,v in qp.items()])
-            request = '/%s/metadata/%s?%s' % \
-                (self._admin, metadata_type, qp_str)
-            return self.request(
-                method=method,
-                request=request,
-                headers=headers,
-                data=data
-            )
-        else:
+    def _request_metadata(self, method, metadata_type, params=None,
+                          headers=None, data=None):
+        if metadata_type not in self.metadata_types:
             raise Exception("Bad metadata_type")
 
-    def get_metadata(self, metadata_type, key=None, max_entries=None, marker=None, headers=None):
-        ''' Returns a JSON object '''
-        qp = { 'format': self._response }
+        if params is None:
+            params = {}
+        params = '&'.join(['%s=%s' % (k, v) for k, v in params.items()])
+        request = '/%s/metadata/%s?%s' % (self._admin, metadata_type, params)
+        return self.request(
+            method=method,
+            request=request,
+            headers=headers,
+            data=data
+        )
+
+    def get_metadata(self, metadata_type, key=None, max_entries=None,
+                     marker=None, headers=None):
+        ''' Returns a JSON object representation of the metadata '''
+        params = {'format': self._response}
         if key is not None:
-            qp['key'] = key
+            params['key'] = key
         if marker is not None:
-            qp['marker'] = urllib.parse.quote(marker)
+            params['marker'] = urllib.parse.quote(marker)
         if max_entries is not None:
-            qp['max-entries'] = max_entries
-        return self._request_metadata('get', metadata_type, qp=qp, headers=headers)
+            params['max-entries'] = max_entries
+        return self._request_metadata(
+            method='get',
+            metadata_type=metadata_type,
+            params=params,
+            headers=headers,
+        )
 
     def put_metadata(self, metadata_type, key, json_string):
         return self._request_metadata(
             method='put',
             metadata_type=metadata_type,
-            qp={'key': key},
+            params={'key': key},
             headers={'Content-Type': 'application/json'},
             data=json_string)
 
@@ -184,24 +191,33 @@ class RGWAdmin:
         return self._request_metadata(
             method='delete',
             metadata_type=metadata_type,
-            qp={'key': key})
+            params={'key': key},
+        )
 
     def lock_metadata(self, metadata_type, key, lock_id, length):
-        qp = {
+        params = {
             'lock': 'lock',
             'key': key,
             'lock_id': lock_id,
             'length': int(length),
         }
-        return _request_metadata(metadata_type, 'post', qp)
+        return self._request_metadata(
+            method='post',
+            metadata_type=metadata_type,
+            params=params,
+        )
 
     def unlock_metadata(self, metadata_type, key, lock_id):
-        qp = {
+        params = {
             'unlock': 'unlock',
             'key': key,
             'lock_id': lock_id,
         }
-        return _request_metadata(metadata_type, 'post', qp)
+        return self._request_metadata(
+            method='post',
+            metadata_type=metadata_type,
+            params=params,
+            )
 
     def get_user(self, uid):
         return self.request('get', '/%s/user?format=%s&uid=%s' %
