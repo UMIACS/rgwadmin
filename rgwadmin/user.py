@@ -191,22 +191,28 @@ class RGWUser(AttributeMixin):
                     d[k] = (existing[k], current[k])
         return d
 
-    def save(self):
+    def exists(self):
+        """Return True if the user exists.  False otherwise."""
         rgw = RGWAdmin.get_connection()
         try:
-            self.fetch(self.user_id)
+            rgw.get_metadata('user', self.user_id)
+            return True
         except NoSuchKey:
-            # create a new user first before we save the full object
+            return False
+
+    def save(self):
+        rgw = RGWAdmin.get_connection()
+
+        if not self.exists():
             log.debug('User does not exist. Creating %s' % self.user_id)
-            rgw.create_user(user_id=self.user_id,
+            rgw.create_user(uid=self.user_id,
                             display_name=self.display_name)
-        else:
-            # only replace the data with our local object
-            d = self._modify_dict()
-            log.debug('Modify existing user %s %s' % (self.user_id, d))
-            rgw.modify_user(**d)
-            rgw.set_quota(self.user_id, 'user', **self.user_quota.to_dict())
-            rgw.set_quota(self.user_id, 'bucket', **self.bucket_quota.to_dict())
+
+        d = self._modify_dict()
+        log.debug('Modify existing user %s %s' % (self.user_id, d))
+        rgw.modify_user(**d)
+        rgw.set_quota(self.user_id, 'user', **self.user_quota.to_dict())
+        rgw.set_quota(self.user_id, 'bucket', **self.bucket_quota.to_dict())
 
     def delete(self):
         rgw = RGWAdmin.get_connection()

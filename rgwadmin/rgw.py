@@ -35,7 +35,7 @@ class RGWAdmin:
 
     def __init__(self, access_key, secret_key, server,
                  admin='admin', response='json', ca_bundle=None,
-                 secure=True, verify=True):
+                 secure=True, verify=True, timeout=None):
         self._access_key = access_key
         self._secret_key = secret_key
         self._server = server
@@ -49,6 +49,8 @@ class RGWAdmin:
             self._protocol = 'https'
         else:
             self._protocol = 'http'
+
+        self._timeout = timeout
 
     @classmethod
     def connect(cls, **kwargs):
@@ -135,7 +137,8 @@ class RGWAdmin:
             else:
                 verify = self._verify
             auth = S3Auth(self._access_key, self._secret_key, self._server)
-            r = m(url, headers=headers, auth=auth, verify=verify, data=data)
+            r = m(url, headers=headers, auth=auth, verify=verify, data=data,
+                  timeout=self._timeout)
         except Exception as e:
             #log.exception(e)
             raise e
