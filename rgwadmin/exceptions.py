@@ -10,8 +10,9 @@ This module contains the rgwadmin exceptions.
 class RGWAdminException(Exception):
     """There was a unlabeled exception that was raised during your request"""
     def __init__(self, code, raw=None):
-      self.code = code
-      self.raw = raw
+        self.code = code
+        self.raw = raw
+
 
 class AccessDenied(RGWAdminException):
     """Access was denied for the request."""

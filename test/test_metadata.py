@@ -6,7 +6,6 @@ import unittest
 
 import rgwadmin
 from rgwadmin.utils import get_environment_creds, id_generator
-from rgwadmin.user import RGWUser
 
 logging.basicConfig(level=logging.WARNING)
 

@@ -3,7 +3,6 @@ try:
     from collections import OrderedDict
 except ImportError:
     from ordereddict import OrderedDict
-import json
 from .utils import random_password
 from .rgw import RGWAdmin
 from .exceptions import NoSuchKey
