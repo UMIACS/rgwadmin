@@ -122,7 +122,7 @@ class RGWAdmin:
                       InternalError]:
                 if code == e.__name__:
                     raise e(j)
-            raise RGWAdminException(code, j)
+            raise RGWAdminException(code, raw=j)
 
     def request(self, method, request, headers=None, data=None):
         url = '%s%s' % (self.get_base_url(), request)
