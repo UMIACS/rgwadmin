@@ -32,7 +32,7 @@ tag:
 upload: clean
 	python setup.py sdist
 	twine upload dist/*
-	twine upload -r umiacs dist/*
+	twine upload --repository-url https://pypi.umiacs.umd.edu/ dist/*
 
 .PHONY: clean
 clean:
