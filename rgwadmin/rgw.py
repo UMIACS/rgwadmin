@@ -7,6 +7,7 @@ except ImportError:
 import logging
 import string
 import random
+import urllib
 
 import requests
 from awsauth import S3Auth
@@ -28,9 +29,10 @@ try:
 except AttributeError:
     LETTERS = string.letters
 
+
 class RGWAdmin:
 
-    metadata_types = ['user', 'bucket']
+    metadata_types = ['user', 'bucket', 'bucket.instance']
 
     def __init__(self, access_key, secret_key, server,
                  admin='admin', response='json', ca_bundle=None,
@@ -107,10 +109,9 @@ class RGWAdmin:
             return None
         else:
             if j is not None:
-                log.error(j)
                 code = str(j.get('Code', 'InternalError'))
             else:
-                raise ServerDown
+                raise ServerDown(None)
             for e in [AccessDenied, UserExists, InvalidAccessKey,
                       InvalidKeyType, InvalidSecretKey, KeyExists, EmailExists,
                       SubuserExists, InvalidAccess, InvalidArgument,
@@ -120,8 +121,8 @@ class RGWAdmin:
                       NoSuchKey, IncompleteBody, BucketAlreadyExists,
                       InternalError]:
                 if code == e.__name__:
-                    raise e
-            raise RGWAdminException(code)
+                    raise e(j)
+            raise RGWAdminException(code, raw=j)
 
     def request(self, method, request, headers=None, data=None):
         url = '%s%s' % (self.get_base_url(), request)
@@ -139,31 +140,84 @@ class RGWAdmin:
             r = m(url, headers=headers, auth=auth, verify=verify, data=data,
                   timeout=self._timeout)
         except Exception as e:
-            log.exception(e)
-            raise
+            raise e
         return self._load_request(r)
 
-    def get_metadata(self, metadata_type, key=None):
-        ''' Returns a JSON object '''
-        if metadata_type in ['user', 'bucket']:
-            request_string = '/%s/metadata/%s?format=%s' % \
-                (self._admin, metadata_type, self._response)
-            if key is not None:
-                request_string += '&key=%s' % key
-            return self.request('get', request_string)
-        else:
-            return None
+    def _request_metadata(self, method, metadata_type, params=None,
+                          headers=None, data=None):
+        if metadata_type not in self.metadata_types:
+            raise Exception("Bad metadata_type")
 
-    def set_metadata(self, metadata_type, key, json_string):
-        if metadata_type in self.metadata_types:
-            return self.request(
-                'put', '/%s/metadata/%s?key=%s' %
-                (self._admin, metadata_type, key),
-                headers={'Content-Type': 'application/json'},
-                data=json_string,
+        if params is None:
+            params = {}
+        params = '&'.join(['%s=%s' % (k, v) for k, v in params.items()])
+        request = '/%s/metadata/%s?%s' % (self._admin, metadata_type, params)
+        return self.request(
+            method=method,
+            request=request,
+            headers=headers,
+            data=data
+        )
+
+    def get_metadata(self, metadata_type, key=None, max_entries=None,
+                     marker=None, headers=None):
+        ''' Returns a JSON object representation of the metadata '''
+        params = {'format': self._response}
+        if key is not None:
+            params['key'] = key
+        if marker is not None:
+            params['marker'] = urllib.parse.quote(marker)
+        if max_entries is not None:
+            params['max-entries'] = max_entries
+        return self._request_metadata(
+            method='get',
+            metadata_type=metadata_type,
+            params=params,
+            headers=headers,
+        )
+
+    def put_metadata(self, metadata_type, key, json_string):
+        return self._request_metadata(
+            method='put',
+            metadata_type=metadata_type,
+            params={'key': key},
+            headers={'Content-Type': 'application/json'},
+            data=json_string)
+
+    # Alias for compatability:
+    set_metadata = put_metadata
+
+    def delete_metadata(self, metadata_type, key):
+        return self._request_metadata(
+            method='delete',
+            metadata_type=metadata_type,
+            params={'key': key},
+        )
+
+    def lock_metadata(self, metadata_type, key, lock_id, length):
+        params = {
+            'lock': 'lock',
+            'key': key,
+            'lock_id': lock_id,
+            'length': int(length),
+        }
+        return self._request_metadata(
+            method='post',
+            metadata_type=metadata_type,
+            params=params,
+        )
+
+    def unlock_metadata(self, metadata_type, key, lock_id):
+        params = {
+            'unlock': 'unlock',
+            'key': key,
+            'lock_id': lock_id,
+        }
+        return self._request_metadata(
+            method='post',
+            metadata_type=metadata_type,
+            params=params,
             )
-        else:
-            return None
 
     def get_user(self, uid):
         return self.request('get', '/%s/user?format=%s&uid=%s' %
@@ -399,6 +453,10 @@ class RGWAdmin:
         parameters = 'uid=%s&user-caps=%s' % (uid, user_caps)
         return self.request('delete', '/%s/user?caps&format=%s&%s' %
                             (self._admin, self._response, parameters))
+
+    def get_bucket_instances(self):
+        '''Returns a list of all bucket instances in the radosgw'''
+        return self.get_metadata(metadata_type='bucket.instance')
 
     @staticmethod
     def parse_rados_datestring(s):
