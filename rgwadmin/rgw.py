@@ -7,11 +7,11 @@ except ImportError:
 import logging
 import string
 import random
-import urllib
 
 import requests
 from awsauth import S3Auth
 
+from .compat import quote
 from .exceptions import (
     RGWAdminException, AccessDenied, UserExists,
     InvalidAccessKey, InvalidSecretKey, InvalidKeyType,
@@ -166,7 +166,7 @@ class RGWAdmin:
         if key is not None:
             params['key'] = key
         if marker is not None:
-            params['marker'] = urllib.parse.quote(marker)
+            params['marker'] = quote(marker)
         if max_entries is not None:
             params['max-entries'] = max_entries
         return self._request_metadata(
