@@ -5,6 +5,7 @@ import logging
 import unittest
 
 import rgwadmin
+from rgwadmin.compat import quote
 from rgwadmin.utils import get_environment_creds, id_generator
 
 logging.basicConfig(level=logging.WARNING)
@@ -61,6 +62,9 @@ class MetadataTest(unittest.TestCase):
         expected_instance = '%s:%s' % (bucket_name, bucket['id'])
         self.assertTrue(expected_instance in instances)
         self.rgw.remove_bucket(bucket=bucket_name, purge_objects=True)
+
+    def test_metadata_marker(self):
+        self.assertEqual('default.345%20-5', quote('default.345 -5'))
 
 
 if __name__ == '__main__':
