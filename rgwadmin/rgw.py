@@ -324,6 +324,18 @@ class RGWAdmin:
         return self.request('put', '/%s/user?quota&format=%s&%s' %
                             (self._admin, self._response, parameters))
 
+    def set_individual_bucket_quota(self, bucket, uid='', max_size_kb=None,
+                                    max_objects=None, enabled=None):
+        parameters = 'uid=%s&bucket=%s' % (uid, bucket)
+        if max_size_kb is not None:
+            parameters += '&max-size-kb=%d' % max_size_kb
+        if max_objects is not None:
+            parameters += '&max-objects=%d' % max_objects
+        if enabled is not None:
+            parameters += '&enabled=%s' % str(enabled).lower()
+        return self.request('put', '/%s/bucket?quota&format=%s&%s&quota' %
+                            (self._admin, self._response, parameters))
+
     def remove_user(self, uid, purge_data=False):
         parameters = 'uid=%s' % uid
         parameters += '&purge-data=%s' % purge_data
