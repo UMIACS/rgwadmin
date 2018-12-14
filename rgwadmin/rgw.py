@@ -310,18 +310,42 @@ class RGWAdmin:
         '''Return the quota set on every bucket owned/created by a user'''
         return self.get_quota(uid=uid, quota_type='bucket')
 
-    def set_quota(self, uid, quota_type, max_size_kb=None, max_objects=None,
-                  enabled=None):
+    @staticmethod
+    def _quota(max_size_kb=None, max_objects=None, enabled=None):
+        quota = ''
+        if max_size_kb is not None:
+            quota += '&max-size-kb=%d' % max_size_kb
+        if max_objects is not None:
+            quota += '&max-objects=%d' % max_objects
+        if enabled is not None:
+            quota += '&enabled=%s' % str(enabled).lower()
+        return quota
+
+    def set_quota(self, *args, **kwargs):
+        from warnings import warn
+        warn("Deprecated in favor of set_user_quota.")
+        return self.set_user_quota(*args, **kwargs)
+
+    def set_user_quota(self, uid, quota_type, max_size_kb=None,
+                       max_objects=None, enabled=None):
         if quota_type not in ['user', 'bucket']:
             raise InvalidQuotaType
-        parameters = 'uid=%s&quota-type=%s' % (uid, quota_type)
+        quota = self._quota(max_size_kb=max_size_kb, max_objects=max_objects,
+                            enabled=enabled)
+        parameters = 'uid=%s&quota-type=%s%s' % (uid, quota_type, quota)
+        return self.request('put', '/%s/user?quota&format=%s&%s' %
+                            (self._admin, self._response, parameters))
+
+    def set_bucket_quota(self, uid, bucket, max_size_kb=None,
+                         max_objects=None, enabled=None):
+        parameters = 'uid=%s&bucket=%s' % (uid, bucket)
         if max_size_kb is not None:
             parameters += '&max-size-kb=%d' % max_size_kb
         if max_objects is not None:
             parameters += '&max-objects=%d' % max_objects
         if enabled is not None:
             parameters += '&enabled=%s' % str(enabled).lower()
-        return self.request('put', '/%s/user?quota&format=%s&%s' %
+        return self.request('put', '/%s/bucket?quota&format=%s%s' %
                             (self._admin, self._response, parameters))
 
     def remove_user(self, uid, purge_data=False):
