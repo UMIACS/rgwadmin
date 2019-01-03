@@ -323,7 +323,7 @@ class RGWAdmin:
 
     def set_quota(self, *args, **kwargs):
         from warnings import warn
-        warn("Deprecated in favor of set_user_quota.")
+        warn("Deprecated in favor of set_user_quota.", DeprecationWarning)
         return self.set_user_quota(*args, **kwargs)
 
     def set_user_quota(self, uid, quota_type, max_size_kb=None,
@@ -338,14 +338,10 @@ class RGWAdmin:
 
     def set_bucket_quota(self, uid, bucket, max_size_kb=None,
                          max_objects=None, enabled=None):
-        parameters = 'uid=%s&bucket=%s' % (uid, bucket)
-        if max_size_kb is not None:
-            parameters += '&max-size-kb=%d' % max_size_kb
-        if max_objects is not None:
-            parameters += '&max-objects=%d' % max_objects
-        if enabled is not None:
-            parameters += '&enabled=%s' % str(enabled).lower()
-        return self.request('put', '/%s/bucket?quota&format=%s%s' %
+        quota = self._quota(max_size_kb=max_size_kb, max_objects=max_objects,
+                            enabled=enabled)
+        parameters = 'uid=%s&bucket=%s%s' % (uid, bucket, quota)
+        return self.request('put', '/%s/bucket?quota&format=%s&%s' %
                             (self._admin, self._response, parameters))
 
     def remove_user(self, uid, purge_data=False):
