@@ -56,12 +56,28 @@ class RGWAdminTest(unittest.TestCase):
         self.assertTrue(self.user1 in users)
         self.assertTrue(self.user2 in users)
 
-    def test_user_quota(self):
+    def test_legacy_quota(self):
         size = random.randint(1000, 1000000)
         self.rgw.set_quota(uid=self.user1, quota_type='user',
                            max_size_kb=size, enabled=True)
         user1_quota_info = self.rgw.get_user_quota(uid=self.user1)
         self.assertTrue(size == user1_quota_info['max_size_kb'])
+
+    def test_user_quota(self):
+        size = random.randint(1000, 1000000)
+        self.rgw.set_user_quota(uid=self.user1, quota_type='user',
+                                max_size_kb=size, enabled=True)
+        user1_quota_info = self.rgw.get_user_quota(uid=self.user1)
+        self.assertTrue(size == user1_quota_info['max_size_kb'])
+
+    def test_bucket_quota(self):
+        size = random.randint(1000, 1000000)
+        bucket_name = self.user1 + '_bucket'
+        self.rgw.create_bucket(bucket=bucket_name)
+        self.rgw.set_bucket_quota(uid=self.user1, bucket=bucket_name,
+                                  max_size_kb=size, enabled=True)
+        bucket = self.rgw.get_bucket(bucket=bucket_name)
+        self.assertTrue(bucket['bucket_quota']['max_size_kb'] == size)
 
     def test_bucket(self):
         bucket_name = self.user1 + '_bucket'
