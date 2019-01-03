@@ -328,6 +328,16 @@ class RGWAdmin:
 
     def set_user_quota(self, uid, quota_type, max_size_kb=None,
                        max_objects=None, enabled=None):
+        '''
+        Set quotas on users and buckets owned by users
+
+        If `quota_type` is user, then the quota applies to the user.  If
+        `quota_type` is bucket, then the quota applies to buckets owned by
+        the specified uid.
+
+        If you want to set a quota on an individual bucket, then use
+        set_bucket_quota() instead.
+        '''
         if quota_type not in ['user', 'bucket']:
             raise InvalidQuotaType
         quota = self._quota(max_size_kb=max_size_kb, max_objects=max_objects,
@@ -338,6 +348,7 @@ class RGWAdmin:
 
     def set_bucket_quota(self, uid, bucket, max_size_kb=None,
                          max_objects=None, enabled=None):
+        '''Set the quota on an individual bucket'''
         quota = self._quota(max_size_kb=max_size_kb, max_objects=max_objects,
                             enabled=enabled)
         parameters = 'uid=%s&bucket=%s%s' % (uid, bucket, quota)
