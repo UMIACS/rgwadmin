@@ -36,9 +36,19 @@ class RGWAdminTest(unittest.TestCase):
         self.rgw.remove_user(uid=self.user2)
 
     def test_modify_user(self):
+        before_keys = self.user1_obj['keys']
         user = self.rgw.modify_user(uid=self.user1,
                                     email='%s@test.com' % self.user1)
         self.assertTrue(user['email'] == '%s@test.com' % self.user1)
+
+        # ensure that generate_key is False and that new keys are not
+        # being created by default when modifying the user.
+        self.assertEqual(before_keys, user['keys'])
+
+        # generate_key=True should add an extra pair of keys
+        user = self.rgw.modify_user(uid=self.user1, generate_key=True)
+        self.assertNotEqual(before_keys, user['keys'])
+        self.assertEqual(len(before_keys) + 1, len(user['keys']))
 
     def test_duplicate_email(self):
         with self.assertRaises(InvalidArgument):
