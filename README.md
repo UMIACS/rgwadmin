@@ -17,7 +17,7 @@ rgw.create_user(
     email='liam@umiacs.umd.edu',
     user_caps='usage=read, write; users=read',
     max_buckets=1000)
-rgw.set_quota(
+rgw.set_user_quota(
     uid='liam',
     quota_type='user',
     max_size_kb=1024*1024,
