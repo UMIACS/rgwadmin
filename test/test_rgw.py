@@ -6,6 +6,7 @@ import unittest
 import random
 from rgwadmin.exceptions import InvalidArgument
 from rgwadmin.utils import get_environment_creds
+from . import create_bucket
 
 logging.basicConfig(level=logging.WARNING)
 
@@ -83,7 +84,7 @@ class RGWAdminTest(unittest.TestCase):
     def test_bucket_quota(self):
         size = random.randint(1000, 1000000)
         bucket_name = self.user1 + '_bucket'
-        self.rgw.create_bucket(bucket=bucket_name)
+        create_bucket(self.rgw, bucket=bucket_name)
         self.rgw.set_bucket_quota(uid=self.user1, bucket=bucket_name,
                                   max_size_kb=size, enabled=True)
         bucket = self.rgw.get_bucket(bucket=bucket_name)
@@ -91,7 +92,7 @@ class RGWAdminTest(unittest.TestCase):
 
     def test_bucket(self):
         bucket_name = self.user1 + '_bucket'
-        self.rgw.create_bucket(bucket=bucket_name)
+        create_bucket(self.rgw, bucket=bucket_name)
         bucket = self.rgw.get_bucket(bucket=bucket_name)
         self.rgw.link_bucket(bucket=bucket_name, bucket_id=bucket['id'],
                              uid=self.user1)

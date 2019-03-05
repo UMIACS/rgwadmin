@@ -7,6 +7,7 @@ import unittest
 import rgwadmin
 from rgwadmin.compat import quote
 from rgwadmin.utils import get_environment_creds, id_generator
+from . import create_bucket
 
 logging.basicConfig(level=logging.WARNING)
 
@@ -21,14 +22,14 @@ class MetadataTest(unittest.TestCase):
     def test_get_metadata(self):
         bucket_name = id_generator()
         self.assertTrue(bucket_name not in self.rgw.get_metadata('bucket'))
-        self.rgw.create_bucket(bucket=bucket_name)
+        create_bucket(self.rgw, bucket=bucket_name)
         self.assertTrue(bucket_name in self.rgw.get_metadata('bucket'))
         self.rgw.remove_bucket(bucket=bucket_name, purge_objects=True)
 
     def test_put_metadata(self):
         bucket_name = id_generator()
         self.assertTrue(bucket_name not in self.rgw.get_metadata('bucket'))
-        self.rgw.create_bucket(bucket=bucket_name)
+        create_bucket(self.rgw, bucket=bucket_name)
 
         ret_json = self.rgw.get_metadata('bucket', key=bucket_name)
         self.assertEqual(ret_json['data']['bucket']['name'], bucket_name)
@@ -39,7 +40,7 @@ class MetadataTest(unittest.TestCase):
 
     def test_metadata_lock_unlock(self):
         bucket_name = id_generator()
-        self.rgw.create_bucket(bucket=bucket_name)
+        create_bucket(self.rgw, bucket=bucket_name)
         self.rgw.lock_metadata('bucket', key=bucket_name, lock_id='abc',
                                length=5)
         self.rgw.unlock_metadata('bucket', key=bucket_name, lock_id='abc')
@@ -56,7 +57,7 @@ class MetadataTest(unittest.TestCase):
 
     def test_get_bucket_instances(self):
         bucket_name = id_generator()
-        self.rgw.create_bucket(bucket=bucket_name)
+        create_bucket(self.rgw, bucket=bucket_name)
         instances = self.rgw.get_bucket_instances()
         bucket = self.rgw.get_bucket(bucket_name)
         expected_instance = '%s:%s' % (bucket_name, bucket['id'])
