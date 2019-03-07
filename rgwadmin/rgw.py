@@ -443,9 +443,6 @@ class RGWAdmin:
         return self.request('get', '/%s/bucket?index&format=%s&%s' %
                             (self._admin, self._response, parameters))
 
-    def create_bucket(self, bucket):
-        return self.request('put', '/%s' % bucket)
-
     def remove_bucket(self, bucket, purge_objects=False):
         parameters = 'bucket=%s' % bucket
         parameters += '&purge-objects=%s' % purge_objects
