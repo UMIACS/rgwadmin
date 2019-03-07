@@ -211,8 +211,8 @@ class RGWUser(AttributeMixin):
         d = self._modify_dict()
         log.debug('Modify existing user %s %s' % (self.user_id, d))
         rgw.modify_user(**d)
-        rgw.set_quota(self.user_id, 'user', **self.user_quota.to_dict())
-        rgw.set_quota(self.user_id, 'bucket', **self.bucket_quota.to_dict())
+        rgw.set_user_quota(self.user_id, 'user', **self.user_quota.to_dict())
+        rgw.set_user_quota(self.user_id, 'bucket', **self.bucket_quota.to_dict())
 
     def delete(self):
         rgw = RGWAdmin.get_connection()
