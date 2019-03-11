@@ -21,18 +21,16 @@ rpm:
 			--dist-dir=$(DIST_DIR) \
 			--binary-only
 
+.PHONY: sdist
+sdist:
+	python setup.py sdist
+
 .PHONY: tag
 tag:
 	$(SED) -i 's/__version__ = .*/__version__ = "$(VERSION)"/g' $(PACKAGE)/__init__.py
 	$(GIT) add $(PACKAGE)/__init__.py
 	$(GIT) commit -m "Tagging $(VERSION)"
 	$(GIT) tag -a $(VERSION) -m "Tagging $(VERSION)"
-
-.PHONY: upload
-upload: clean
-	python setup.py sdist
-	twine upload dist/*
-	twine upload --repository-url https://pypi.umiacs.umd.edu/ dist/*
 
 .PHONY: clean
 clean:

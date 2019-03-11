@@ -1,0 +1,60 @@
+stages:
+  - build
+  - deploy
+
+build_python_package:
+  stage: build
+  image: registry.umiacs.umd.edu/docker/build/umbuild:rhel7
+  script:
+    - make sdist
+  artifacts:
+    expire_in: 1hr
+    paths:
+      - dist/
+  only:
+    - tags
+  tags:
+    - docker
+
+build_rpm_rhel7:
+  stage: build
+  image: registry.umiacs.umd.edu/docker/build/umbuild:rhel7
+  script:
+    - make rpm
+    - mkdir -p dist/rhel7
+    - cp /srv/build/rhel7/RPMS/noarch/$CI_PROJECT_NAME-$CI_COMMIT_TAG-1.noarch.rpm dist/rhel7/$CI_PROJECT_NAME-$CI_COMMIT_TAG-1.noarch.rpm
+  artifacts:
+    expire_in: 1hr
+    paths:
+      - dist/
+  only:
+    - tags
+  tags:
+    - docker
+
+upload_pypi:
+  stage: deploy
+  image: python:3.6-slim
+  script:
+    - pip install -q twine
+    - twine upload -u $PYPI_USERNAME -p $PYPI_PASSWORD dist/$CI_PROJECT_NAME-$CI_COMMIT_TAG.tar.gz
+  when: manual
+  only:
+    - tags
+  dependencies:
+    - build_python_package
+
+deploy_rpm_rhel7:
+  stage: deploy
+  image: registry.umiacs.umd.edu/docker/build/umbuild:rhel7
+  script:
+    - sudo cp "dist/rhel7/$CI_PROJECT_NAME-$CI_COMMIT_TAG-1.noarch.rpm" /srv/UMyumrepos/rhel7/stable/Packages/noarch
+    - sudo createrepo --workers=4 /srv/UMyumrepos/rhel7/stable
+  when: manual
+  only:
+    - tags
+  tags:
+    - umrepos
+    - docker
+  dependencies:
+    - build_rpm_rhel7
