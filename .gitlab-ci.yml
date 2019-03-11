@@ -21,8 +21,6 @@ build_rpm_rhel7:
   image: registry.umiacs.umd.edu/docker/build/umbuild:rhel7
   script:
     - make rpm
-    - mkdir -p dist/rhel7
-    - cp /srv/build/rhel7/RPMS/noarch/$CI_PROJECT_NAME-$CI_COMMIT_TAG-1.noarch.rpm dist/rhel7/$CI_PROJECT_NAME-$CI_COMMIT_TAG-1.noarch.rpm
   artifacts:
     expire_in: 1hr
     paths:

@@ -13,8 +13,7 @@ REQUIRES := $(PYTHON),$(PYTHON)-requests,$(PYTHON)-requests-aws
 
 .PHONY: rpm
 rpm:
-	-mkdir dist
-	-mkdir $(DIST_DIR)
+	-mkdir -p $(DIST_DIR)
 	$(PYTHON) setup.py bdist_rpm \
 			--python=$(PYTHON) \
 			--requires="$(REQUIRES)" \
