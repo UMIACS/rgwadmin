@@ -4,9 +4,10 @@ stages:
 
 build_python_package:
   stage: build
-  image: registry.umiacs.umd.edu/docker/build/umbuild:rhel7
+  image: python:3.6-slim
   script:
-    - make sdist
+    - pip install -q -U setuptools wheel
+    - python setup.py sdist bdist_wheel
   artifacts:
     expire_in: 1hr
     paths:
@@ -35,7 +36,8 @@ upload_pypi:
   image: python:3.6-slim
   script:
     - pip install -q twine
-    - twine upload -u $PYPI_USERNAME -p $PYPI_PASSWORD dist/$CI_PROJECT_NAME-$CI_COMMIT_TAG.tar.gz
+    - twine check dist/*
+    - twine upload -u $PYPI_USERNAME -p $PYPI_PASSWORD dist/*
   when: manual
   only:
     - tags
