@@ -55,16 +55,20 @@ class RGWAdmin:
 
     @classmethod
     def connect(cls, **kwargs):
-        # set the connection on RGWAdmin
-        # note: only one connection can be active in any single process
+        """Establish a new connection to RGWAdmin
+
+        Only one connection can be active in any single process
+        """
         cls.set_connection(RGWAdmin(**kwargs))
 
     @classmethod
     def set_connection(cls, connection):
+        """Set a connection for the RGWAdmin session to use."""
         cls.connection = connection
 
     @classmethod
     def get_connection(cls):
+        """Return the RGWAdmin connection that was set"""
         return cls.connection
 
     def __repr__(self):
