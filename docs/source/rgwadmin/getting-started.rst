@@ -13,6 +13,10 @@ a :class:`~rgwadmin.rgw.RGWAdmin` object.
        secret_key='MY_SECRET_KEY',
        server='ceph.example.com')
 
+.. note::
+   rgwadmin connects over https by default. To connect over http, pass
+   ``secure=False, verify=False``
+
 Let's create a new user for ourselves with :func:`~rgwadmin.rgw.RGWAdmin.create_user`.
 
 .. code-block:: python
