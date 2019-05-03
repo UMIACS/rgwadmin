@@ -145,9 +145,9 @@ class RGWQuota(AttributeMixin):
 class RGWUser(AttributeMixin):
     attrs = ['user_id', 'display_name', 'email', 'caps', 'keys',
              'max_buckets', 'suspended', 'swift_keys', 'subusers',
-             'placement_tags', 'auid', 'bucket_quota', 'user_quota',
+             'placement_tags', 'bucket_quota', 'user_quota',
              'default_placement', 'op_mask', 'temp_url_keys']
-    modify_attrs_mask = ['placement_tags', 'auid', 'default_placement',
+    modify_attrs_mask = ['placement_tags', 'default_placement',
                          'op_mask', 'temp_url_keys']
     sub_attrs = OrderedDict([('caps', RGWCap),
                              ('keys', RGWKey),
