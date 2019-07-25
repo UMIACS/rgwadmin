@@ -51,6 +51,21 @@ class RGWAdminTest(unittest.TestCase):
         self.assertNotEqual(before_keys, user['keys'])
         self.assertEqual(len(before_keys) + 1, len(user['keys']))
 
+        # modifying a user doesn't automatically un-suspend them
+        # setup - suspend them first
+        user = self.rgw.modify_user(uid=self.user1, suspended=True)
+        self.assertEqual(user['suspended'], 1)
+
+        # test - modify their username without unsuspending them
+        user = self.rgw.modify_user(uid=self.user1,
+                                    email='%s@test2.com' % self.user1)
+        self.assertTrue(user['email'] == '%s@test2.com' % self.user1)
+        self.assertEqual(user['suspended'], 1)
+
+        # unsuspend the user to allow other tests to function
+        user = self.rgw.modify_user(uid=self.user1, suspended=False)
+        self.assertEqual(user['suspended'], 0)
+
     def test_duplicate_email(self):
         with self.assertRaises(InvalidArgument):
             self.rgw.create_user(uid=self.user3,
