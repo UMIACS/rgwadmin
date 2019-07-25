@@ -279,7 +279,7 @@ class RGWAdmin:
 
     def modify_user(self, uid, display_name=None, email=None, key_type='s3',
                     access_key=None, secret_key=None, user_caps=None,
-                    generate_key=False, max_buckets=None, suspended=False):
+                    generate_key=False, max_buckets=None, suspended=None):
         parameters = 'uid=%s' % uid
         if display_name is not None:
             parameters += '&display-name=%s' % display_name
@@ -296,7 +296,8 @@ class RGWAdmin:
         parameters += '&generate-key=%s' % generate_key
         if max_buckets is not None:
             parameters += '&max-buckets=%s' % max_buckets
-        parameters += '&suspended=%s' % suspended
+        if suspended is not None:
+            parameters += '&suspended=%s' % suspended
         return self.request('post', '/%s/user?format=%s&%s' %
                             (self._admin, self._response, parameters))
 
