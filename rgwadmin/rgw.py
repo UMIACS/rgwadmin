@@ -265,6 +265,11 @@ class RGWAdmin:
         return self.request('get', '/%s/usage?format=%s%s' %
                             (self._admin, self._response, parameters))
 
+    def get_stats(self, uid):
+        parameters = '&uid=%s&stats=true' % uid
+        return self.request('get', '/%s/user?format=%s%s' %
+                            (self._admin, self._response, parameters))
+
     def trim_usage(self, uid=None, start=None, end=None, remove_all=False):
         parameters = ''
         if uid is not None:
