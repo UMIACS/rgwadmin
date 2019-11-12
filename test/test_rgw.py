@@ -76,6 +76,12 @@ class RGWAdminTest(unittest.TestCase):
     def test_get_user(self):
         user = self.rgw.get_user(uid=self.user2)
         self.assertTrue(user['display_name'] == 'Unit Test %s' % self.user2)
+        self.assertTrue('stats' not in user)
+
+        user = self.rgw.get_user(uid=self.user2, stats=True)
+        stats = user['stats']
+        self.assertEqual(stats['size'], 0)
+        self.assertEqual(stats['size_actual'], 0)
 
     def test_get_users(self):
         users = self.rgw.get_users()
