@@ -57,8 +57,8 @@ the API that you want to access.  See the
 information.
 
 ### Compatibility
-The API for different versions of Ceph RadosGW has changed over time.  While we
-endeavor to be compatible with as many versions of Ceph RadosGW there will be
+The API for different versions of Ceph radosgw has changed over time.  While we
+endeavor to be compatible with as many versions of Ceph radosgw there will be
 some issues that crop up over time.  We only consider the LTS versions but
 these are what we have tested on.
 
