@@ -57,15 +57,8 @@ the API that you want to access.  See the
 information.
 
 ### Compatibility
-The API for different versions of Ceph radosgw has changed over time.  While we
-endeavor to be compatible with as many versions of Ceph radosgw there will be
-some issues that crop up over time.  We only consider the LTS versions but
-these are what we have tested on.
-
-* 1.0.5 <= Firefly
-* 1.0.6 > Firefly/Hammer
-* 1.1 > Hammer
-* 1.1.5 > Jewel
+rgwadmin implements all documented Admin API operations or recent versions of
+Ceph.  We also implement some of the undocumented ones, too...
 
 ## Installation
 
