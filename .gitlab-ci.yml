@@ -17,9 +17,9 @@ build_python_package:
   tags:
     - docker
 
-build_rpm_rhel7:
+.build_rpm_template: &build_rpm_definition
   stage: build
-  image: registry.umiacs.umd.edu/docker/build/umbuild:rhel7
+  image: registry.umiacs.umd.edu/docker/build/umbuild:$DISTRO
   script:
     - make rpm
   artifacts:
@@ -30,6 +30,16 @@ build_rpm_rhel7:
     - tags
   tags:
     - docker
+
+build_rpm_rhel7:
+  <<: *build_rpm_definition
+  variables:
+    DISTRO: rhel7
+
+build_rpm_rhel8:
+  <<: *build_rpm_definition
+  variables:
+    DISTRO: rhel8
 
 upload_pypi:
   stage: deploy
@@ -44,17 +54,29 @@ upload_pypi:
   dependencies:
     - build_python_package
 
-deploy_rpm_rhel7:
+.deploy_rpm_template: &deploy_rpm_definition
   stage: deploy
-  image: registry.umiacs.umd.edu/docker/build/umbuild:rhel7
+  image: registry.umiacs.umd.edu/docker/build/umbuild:$DISTRO
   script:
-    - sudo cp "dist/rhel7/$CI_PROJECT_NAME-$CI_COMMIT_TAG-1.noarch.rpm" /srv/UMyumrepos/rhel7/stable/Packages/noarch
-    - sudo createrepo --workers=4 /srv/UMyumrepos/rhel7/stable
+    - make copy_rpm
+    - make createrepo
   when: manual
   only:
     - tags
   tags:
     - umrepos
     - docker
+
+deploy_rpm_rhel7:
+  <<: *deploy_rpm_definition
+  variables:
+    DISTRO: rhel7
   dependencies:
     - build_rpm_rhel7
+
+deploy_rpm_rhel8:
+  <<: *deploy_rpm_definition
+  variables:
+    DISTRO: rhel8
+  dependencies:
+    - build_rpm_rhel8
