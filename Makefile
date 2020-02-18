@@ -36,10 +36,6 @@ copy_rpm:
 createrepo:
 	sudo createrepo --workers=4 $(YUMREPO_LOCATION)
 
-.PHONY: sdist
-sdist:
-	$(PYTHON) setup.py sdist
-
 .PHONY: tag
 tag:
 	$(SED) -i 's/__version__ = .*/__version__ = "$(VERSION)"/g' $(PACKAGE)/__init__.py
