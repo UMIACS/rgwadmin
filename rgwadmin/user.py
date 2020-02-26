@@ -1,8 +1,6 @@
 import logging
-try:
-    from collections import OrderedDict
-except ImportError:
-    from ordereddict import OrderedDict
+from collections import OrderedDict
+
 from .utils import random_password
 from .rgw import RGWAdmin
 from .exceptions import NoSuchKey

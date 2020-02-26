@@ -46,10 +46,6 @@ rgwadmin requires the following Python packages:
  * [requests](http://python-requests.org/)
  * [requests-aws](https://github.com/tax/python-requests-aws)
 
- If you are running python < 2.7 you will need a backport of collections
- ordereddict.
- * [ordereddict](https://pypi.python.org/pypi/ordereddict)
-
 Additionally, you need to have a [Ceph](http://www.ceph.org) Object Storage
 instance with a user that has appropriate caps (capabilities) on the parts of
 the API that you want to access.  See the
