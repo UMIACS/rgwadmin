@@ -19,7 +19,7 @@ class AttributeMixin(object):
     def __str__(self):
         try:
             from qav.listpack import ListPack
-        except:
+        except ImportError:
             return str(self.to_tuples())
         return str(ListPack(self.to_tuples()))
 
