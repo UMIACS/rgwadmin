@@ -91,7 +91,7 @@ class RGWAdmin:
         '''Load the request given as JSON handling exceptions if necessary'''
         try:
             j = r.json()
-        except ValueError as e:
+        except ValueError:
             # some calls in the admin API encode the info in the headers
             # instead of the body.  The code that follows is an ugly hack
             # due to the fact that there's a bug in the admin API we're
@@ -221,7 +221,7 @@ class RGWAdmin:
             method='post',
             metadata_type=metadata_type,
             params=params,
-            )
+        )
 
     def get_user(self, uid, stats=False):
         return self.request('get', '/%s/user?format=%s&uid=%s&stats=%s' %
