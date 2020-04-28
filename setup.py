@@ -9,7 +9,7 @@ import re
 
 try:
     from setuptools import setup
-    extra = dict(test_suite="tests.test.suite", include_package_data=True)
+    extra = dict(include_package_data=True)
 except ImportError:
     from distutils.core import setup
     extra = {}
