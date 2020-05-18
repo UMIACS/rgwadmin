@@ -36,12 +36,13 @@ class RGWAdmin:
 
     def __init__(self, access_key, secret_key, server,
                  admin='admin', response='json', ca_bundle=None,
-                 secure=True, verify=True, timeout=None):
+                 secure=True, verify=True, timeout=None, pool_connections=True):
         self._access_key = access_key
         self._secret_key = secret_key
         self._server = server
         self._admin = admin
         self._response = response
+        self._session = None
 
         # ssl support
         self._ca_bundle = ca_bundle
@@ -52,6 +53,9 @@ class RGWAdmin:
             self._protocol = 'http'
 
         self._timeout = timeout
+
+        if pool_connections:
+            self._session = requests.Session()
 
     @classmethod
     def connect(cls, **kwargs):
@@ -135,7 +139,12 @@ class RGWAdmin:
         log.debug('Verify: %s  CA Bundle: %s' % (self._verify,
                                                  self._ca_bundle))
         try:
-            m = getattr(requests, method.lower())
+            if self._session:
+                # use connection pool
+                m = getattr(self._session, method.lower())
+            else:
+                # do not use connection pool
+                m = getattr(requests, method.lower())
             if self._ca_bundle:
                 verify = self._ca_bundle
             else:
