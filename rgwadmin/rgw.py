@@ -36,7 +36,7 @@ class RGWAdmin:
 
     def __init__(self, access_key, secret_key, server,
                  admin='admin', response='json', ca_bundle=None,
-                 secure=True, verify=True, timeout=None, pool_connections=True):
+                 secure=True, verify=True, timeout=None, pool_connections=False):
         self._access_key = access_key
         self._secret_key = secret_key
         self._server = server
