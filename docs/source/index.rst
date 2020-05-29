@@ -14,7 +14,7 @@ Contents:
    :glob:
 
    rgwadmin/installation
-   rgwadmin/getting-started
+   rgwadmin/user-guide
    api
 
 
