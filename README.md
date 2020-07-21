@@ -52,6 +52,8 @@ the API that you want to access.  See the
 [Ceph Object Storage](http://docs.ceph.com/docs/master/radosgw/) page for more
 information.
 
+Version 2.3.1 was the last to support Python 2.
+
 ### Compatibility
 rgwadmin implements all documented Admin API operations or recent versions of
 Ceph.  We also implement some of the undocumented ones, too...
