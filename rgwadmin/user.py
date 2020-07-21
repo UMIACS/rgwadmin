@@ -7,11 +7,6 @@ from .exceptions import NoSuchKey
 
 log = logging.getLogger(__name__)
 
-try:
-    unicode
-except NameError:
-    unicode = str
-
 
 class AttributeMixin(object):
     attrs = []
@@ -155,6 +150,7 @@ class RGWUser(AttributeMixin):
                              ('user_quota', RGWQuota)])
 
     """Representation of a RadosGW User"""
+
     def __init__(self, **kwargs):
         self.sensitive_attrs = [('keys', 'secret_key')]
         for attr in self.attrs:
@@ -247,7 +243,7 @@ class RGWUser(AttributeMixin):
             log.warning('rgw_user is not a dict instance')
             return None
         # check to make sure we have all the correct keys
-        if not set(map(lambda x: unicode(x), cls.attrs)) <= \
+        if not set([str(x) for x in cls.attrs]) <= \
                 set(rgw_user.keys()):
             return None
         log.debug('Parsing RGWUser %s' % rgw_user)
