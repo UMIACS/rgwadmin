@@ -3,9 +3,9 @@
 import json
 import logging
 import unittest
+from urllib.parse import quote
 
 import rgwadmin
-from rgwadmin.compat import quote
 from rgwadmin.utils import get_environment_creds, id_generator
 from . import create_bucket
 
