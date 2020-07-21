@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 
-from __future__ import with_statement
-
 from os import path
-from io import open  # can remove after python2 support dropped.
 import ast
 import re
 
@@ -45,13 +42,9 @@ setup(
     keywords=["ceph", "radosgw", "admin api"],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.2',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6'],
+        'Programming Language :: Python :: 3.6',
+    ],
     **extra
 )

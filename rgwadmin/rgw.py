@@ -1,9 +1,6 @@
 import time
 import json
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO
+from io import StringIO
 import logging
 import string
 import random
@@ -11,7 +8,7 @@ import random
 import requests
 from awsauth import S3Auth
 
-from .compat import quote
+from urllib.parse import quote
 from .exceptions import (
     RGWAdminException, AccessDenied, UserExists,
     InvalidAccessKey, InvalidSecretKey, InvalidKeyType,
@@ -24,10 +21,7 @@ from .exceptions import (
 )
 
 log = logging.getLogger(__name__)
-try:
-    LETTERS = string.ascii_letters
-except AttributeError:
-    LETTERS = string.letters
+LETTERS = string.ascii_letters
 
 
 class RGWAdmin:
