@@ -1,6 +1,14 @@
 stages:
+  - test
   - build
   - deploy
+
+mypy:
+  stage: test
+  image: python:3.6-slim
+  script:
+    - pip install -q tox
+    - tox -e mypy
 
 build_python_package:
   stage: build
