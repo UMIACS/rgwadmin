@@ -1,6 +1,8 @@
 import logging
 from collections import OrderedDict
 
+from typing import List
+
 from .utils import random_password
 from .rgw import RGWAdmin
 from .exceptions import NoSuchKey
@@ -9,7 +11,7 @@ log = logging.getLogger(__name__)
 
 
 class AttributeMixin(object):
-    attrs = []
+    attrs: List[str] = []
 
     def __str__(self):
         try:

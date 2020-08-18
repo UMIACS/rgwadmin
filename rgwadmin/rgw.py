@@ -5,6 +5,9 @@ import logging
 import string
 import random
 
+from typing import Dict
+from typing import ClassVar, Union
+
 import requests
 from awsauth import S3Auth
 
@@ -25,6 +28,17 @@ LETTERS = string.ascii_letters
 
 
 class RGWAdmin:
+    _access_key: str
+    _secret_key: str
+    _server: str
+    _admin: str
+    _response: str
+    _ca_bundle: str
+    _verify: bool
+    _protocol: str
+    _timeout: int
+
+    connection: ClassVar['RGWAdmin']
 
     metadata_types = ['user', 'bucket', 'bucket.instance']
 
@@ -60,12 +74,12 @@ class RGWAdmin:
         cls.set_connection(RGWAdmin(**kwargs))
 
     @classmethod
-    def set_connection(cls, connection):
+    def set_connection(cls, connection: 'RGWAdmin'):
         """Set a connection for the RGWAdmin session to use."""
         cls.connection = connection
 
     @classmethod
-    def get_connection(cls):
+    def get_connection(cls) -> 'RGWAdmin':
         """Return the RGWAdmin connection that was set"""
         return cls.connection
 
@@ -81,7 +95,7 @@ class RGWAdmin:
             returning += 'CA Bundle: %s\n' % self._ca_bundle
         return returning
 
-    def get_base_url(self):
+    def get_base_url(self) -> str:
         '''Return a base URL.  I.e. https://ceph.server'''
         return '%s://%s' % (self._protocol, self._server)
 
@@ -126,7 +140,7 @@ class RGWAdmin:
                     raise e(j)
             raise RGWAdminException(code, raw=j)
 
-    def request(self, method, request, headers=None, data=None):
+    def request(self, method, request, headers: Dict = None, data=None):
         url = '%s%s' % (self.get_base_url(), request)
         log.debug('URL: %s' % url)
         log.debug('Access Key: %s' % self._access_key)
@@ -139,6 +153,7 @@ class RGWAdmin:
             else:
                 # do not use connection pool
                 m = getattr(requests, method.lower())
+            verify: Union[bool, str, None] = None
             if self._ca_bundle:
                 verify = self._ca_bundle
             else:
@@ -214,7 +229,7 @@ class RGWAdmin:
             params=params,
         )
 
-    def unlock_metadata(self, metadata_type, key, lock_id):
+    def unlock_metadata(self, metadata_type: str, key, lock_id):
         params = {
             'unlock': 'unlock',
             'key': key,
@@ -226,7 +241,7 @@ class RGWAdmin:
             params=params,
         )
 
-    def get_user(self, uid, stats=False):
+    def get_user(self, uid: str, stats=False):
         return self.request('get', '/%s/user?format=%s&uid=%s&stats=%s' %
                             (self._admin, self._response, uid, stats))
 
