@@ -7,8 +7,8 @@ mypy:
   stage: test
   image: python:3.6-slim
   script:
-    - pip install -q mypy
-    - mypy rgwadmin/
+    - pip install -q tox
+    - tox -e mypy
 
 build_python_package:
   stage: build
