@@ -28,6 +28,8 @@ with open('rgwadmin/__init__.py', encoding='utf-8') as f:
 setup(
     name="rgwadmin",
     packages=["rgwadmin"],
+    package_data={"rgwadmin": ["py.typed"]},
+    zip_safe=False,
     version=version,
     install_requires=install_requires,
     author="Derek Yarnell",
