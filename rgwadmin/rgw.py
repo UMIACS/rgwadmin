@@ -241,9 +241,17 @@ class RGWAdmin:
             params=params,
         )
 
-    def get_user(self, uid: str, stats=False):
-        return self.request('get', '/%s/user?format=%s&uid=%s&stats=%s' %
-                            (self._admin, self._response, uid, stats))
+    def get_user(self, uid: str = None, access_key: str = None, stats=False):
+        if uid is not None and access_key is not None:
+            raise ValueError('Only one of uid and access_key is allowed')
+        parameters = ''
+        if uid is not None:
+            parameters += '&uid=%s' % uid
+        if access_key is not None:
+            parameters += '&access-key=%s' % access_key
+        parameters += '&stats=%s' % stats
+        return self.request('get', '/%s/user?format=%s%s' %
+                            (self._admin, self._response, parameters))
 
     def get_users(self):
         return self.get_metadata(metadata_type='user')
