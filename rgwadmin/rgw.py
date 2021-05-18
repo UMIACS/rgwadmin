@@ -392,8 +392,7 @@ class RGWAdmin:
             parameters += '&key-type=%s' % key_type
         if access is not None:
             parameters += '&access=%s' % access
-        if generate_secret:
-            parameters += '&generate-secret=%s' % generate_secret
+        parameters += '&generate-secret=%s' % generate_secret
         return self.request('put', '/%s/user?subuser&format=%s&%s' %
                             (self._admin, self._response, parameters))
 
