@@ -241,7 +241,8 @@ class RGWAdmin:
             params=params,
         )
 
-    def get_user(self, uid: str = None, access_key: str = None, stats=False):
+    def get_user(self, uid: str = None, access_key: str = None, stats=False,
+                 sync=False):
         if uid is not None and access_key is not None:
             raise ValueError('Only one of uid and access_key is allowed')
         parameters = ''
@@ -249,7 +250,7 @@ class RGWAdmin:
             parameters += '&uid=%s' % uid
         if access_key is not None:
             parameters += '&access-key=%s' % access_key
-        parameters += '&stats=%s' % stats
+        parameters += '&stats=%s&sync=%s' % (stats, sync)
         return self.request('get', '/%s/user?format=%s%s' %
                             (self._admin, self._response, parameters))
 
@@ -400,8 +401,7 @@ class RGWAdmin:
             parameters += '&key-type=%s' % key_type
         if access is not None:
             parameters += '&access=%s' % access
-        if generate_secret:
-            parameters += '&generate-secret=%s' % generate_secret
+        parameters += '&generate-secret=%s' % generate_secret
         return self.request('put', '/%s/user?subuser&format=%s&%s' %
                             (self._admin, self._response, parameters))
 
