@@ -241,9 +241,9 @@ class RGWAdmin:
             params=params,
         )
 
-    def get_user(self, uid: str, stats=False):
-        return self.request('get', '/%s/user?format=%s&uid=%s&stats=%s' %
-                            (self._admin, self._response, uid, stats))
+    def get_user(self, uid: str, stats=False, sync=False):
+        return self.request('get', '/%s/user?format=%s&uid=%s&stats=%s&sync=%s' %
+                            (self._admin, self._response, uid, stats, sync))
 
     def get_users(self):
         return self.get_metadata(metadata_type='user')
