@@ -5,7 +5,7 @@ import logging
 import string
 import random
 
-from typing import Dict
+from typing import Optional, Dict
 from typing import ClassVar, Union
 
 import requests
@@ -140,7 +140,7 @@ class RGWAdmin:
                     raise e(j)
             raise RGWAdminException(code, raw=j)
 
-    def request(self, method, request, headers: Dict = None, data=None):
+    def request(self, method, request, headers: Optional[Dict] = None, data=None):
         url = '%s%s' % (self.get_base_url(), request)
         log.debug('URL: %s' % url)
         log.debug('Access Key: %s' % self._access_key)
@@ -241,7 +241,7 @@ class RGWAdmin:
             params=params,
         )
 
-    def get_user(self, uid: str = None, access_key: str = None, stats=False,
+    def get_user(self, uid: Optional[str] = None, access_key: Optional[str] = None, stats=False,
                  sync=False):
         if uid is not None and access_key is not None:
             raise ValueError('Only one of uid and access_key is allowed')
