@@ -15,7 +15,7 @@ BuildArch: noarch
 Vendor: UMIACS Staff <github@umiacs.umd.edu>
 Requires: python3
 Requires: python3-requests
-Requires: python3-requests-aws
+Requires: python3-requests-aws4auth
 Url: https://github.com/UMIACS/rgwadmin
 
 %description
