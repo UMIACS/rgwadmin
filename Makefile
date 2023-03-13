@@ -6,7 +6,7 @@ PYTHON = python3
 PACKAGE = rgwadmin
 RELEASE = 1
 VERSION = $(shell git describe --abbrev=0 --tags)
-OS_MAJOR_VERSION = $(shell lsb_release -rs | cut -f1 -d.)
+OS_MAJOR_VERSION = $(shell grep ^VERSION_ID /etc/os-release | cut -f2 -d \" | cut -f1 -d \.)
 OS := rhel$(OS_MAJOR_VERSION)
 DIST_DIR := dist/$(OS)
 BUILDROOT := /srv/build/$(OS)

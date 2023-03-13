@@ -5,14 +5,14 @@ stages:
 
 mypy:
   stage: test
-  image: python:3.6-slim
+  image: python:3.8-slim
   script:
     - pip install -q tox
     - tox -e mypy
 
 build_python_package:
   stage: build
-  image: python:3.6-slim
+  image: python:3.8-slim
   script:
     - pip install -q -U setuptools wheel
     - python setup.py sdist bdist_wheel
@@ -23,7 +23,7 @@ build_python_package:
   only:
     - tags
   tags:
-    - docker
+    - podman
 
 .build_rpm_template: &build_rpm_definition
   stage: build
@@ -37,7 +37,7 @@ build_python_package:
   only:
     - tags
   tags:
-    - docker
+    - podman
 
 build_rpm_rhel7:
   <<: *build_rpm_definition
@@ -49,9 +49,14 @@ build_rpm_rhel8:
   variables:
     DISTRO: rhel8
 
+build_rpm_rhel9:
+  <<: *build_rpm_definition
+  variables:
+    DISTRO: rhel9
+
 upload_pypi:
   stage: deploy
-  image: python:3.6-slim
+  image: python:3.8-slim
   script:
     - pip install -q twine
     - twine check dist/*
@@ -73,7 +78,7 @@ upload_pypi:
     - tags
   tags:
     - umrepos
-    - docker
+    - podman
 
 deploy_rpm_rhel7:
   <<: *deploy_rpm_definition
@@ -88,3 +93,10 @@ deploy_rpm_rhel8:
     DISTRO: rhel8
   dependencies:
     - build_rpm_rhel8
+
+deploy_rpm_rhel9:
+  <<: *deploy_rpm_definition
+  variables:
+    DISTRO: rhel9
+  dependencies:
+    - build_rpm_rhel9

@@ -9,7 +9,7 @@ from typing import Dict
 from typing import ClassVar, Union
 
 import requests
-from awsauth import S3Auth
+from requests_aws4auth import AWS4Auth
 
 from urllib.parse import quote
 from .exceptions import (
@@ -158,7 +158,7 @@ class RGWAdmin:
                 verify = self._ca_bundle
             else:
                 verify = self._verify
-            auth = S3Auth(self._access_key, self._secret_key, self._server)
+            auth = AWS4Auth(self._access_key, self._secret_key, 'nowhere', 's3')
             r = m(url, headers=headers, auth=auth, verify=verify, data=data,
                   timeout=self._timeout)
         except Exception as e:

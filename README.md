@@ -44,7 +44,7 @@ u.delete()
 rgwadmin requires the following Python packages:
 
  * [requests](http://python-requests.org/)
- * [requests-aws](https://github.com/tax/python-requests-aws)
+ * [requests-aws4auth](https://github.com/tedder/requests-aws4auth)
 
 Additionally, you need to have a [Ceph](http://www.ceph.org) Object Storage
 instance with a user that has appropriate caps (capabilities) on the parts of
@@ -52,7 +52,8 @@ the API that you want to access.  See the
 [Ceph Object Storage](http://docs.ceph.com/docs/master/radosgw/) page for more
 information.
 
-Version 2.3.1 was the last to support Python 2.
+Version 2.3.1 was the last to support Python 2.  As of version 2.4.0 we support 
+using V4 signing for requests to the Ceph RGW Admin server only.
 
 ### Compatibility
 rgwadmin implements all documented Admin API operations or recent versions of
