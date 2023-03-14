@@ -480,11 +480,11 @@ class RGWAdmin:
         return self.request('post', '/%s/bucket?format=%s&%s' %
                             (self._admin, self._response, parameters))
 
-    def link_bucket(self, bucket, bucket_id, uid):
+    def link_bucket(self, bucket, bucket_id, uid, new_bucket_name):
         # note that even though the Ceph docs say that bucket-id is optional
         # the API call will fail (InvalidArgument) if it is omitted.
-        parameters = 'bucket=%s&bucket-id=%s&uid=%s' % \
-            (bucket, bucket_id, uid)
+        parameters = 'bucket=%s&bucket-id=%s&uid=%s&new-bucket-name=%s' % \
+            (bucket, bucket_id, uid, new_bucket_name)
         return self.request('put', '/%s/bucket?format=%s&%s' %
                             (self._admin, self._response, parameters))
 
