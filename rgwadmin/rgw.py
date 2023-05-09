@@ -142,6 +142,12 @@ class RGWAdmin:
 
     def request(self, method, request, headers: Optional[Dict] = None, data=None):
         url = '%s%s' % (self.get_base_url(), request)
+        # add host request header
+        if headers:
+            headers['host'] = self._server
+        else:
+            headers = {'host': self._server}
+        
         log.debug('URL: %s' % url)
         log.debug('Access Key: %s' % self._access_key)
         log.debug('Verify: %s  CA Bundle: %s' % (self._verify,
