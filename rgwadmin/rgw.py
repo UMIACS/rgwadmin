@@ -408,7 +408,7 @@ class RGWAdmin:
         if access is not None:
             parameters += '&access=%s' % access
         parameters += '&generate-secret=%s' % generate_secret
-        return self.request('put', '/%s/user?subuser&format=%s&%s' %
+        return self.request('put', '/%s/user?format=%s&%s' %
                             (self._admin, self._response, parameters))
 
     def modify_subuser(self, uid, subuser, secret=None, key_type='swift',
@@ -420,13 +420,13 @@ class RGWAdmin:
         if access is not None:
             parameters += '&access=%s' % access
         parameters += '&generate-secret=%s' % generate_secret
-        return self.request('post', '/%s/user?subuser&format=%s&%s' %
+        return self.request('post', '/%s/user?format=%s&%s' %
                             (self._admin, self._response, parameters))
 
     def remove_subuser(self, uid, subuser, purge_keys=True):
         parameters = 'uid=%s&subuser=%s&purge-keys=%s' % (uid, subuser,
                                                           purge_keys)
-        return self.request('delete', '/%s/user?subuser&format=%s&%s' %
+        return self.request('delete', '/%s/user?format=%s&%s' %
                             (self._admin, self._response, parameters))
 
     def create_key(self, uid, subuser=None, key_type='s3', access_key=None,
@@ -498,7 +498,7 @@ class RGWAdmin:
 
     def remove_object(self, bucket, object_name):
         parameters = 'bucket=%s&object=%s' % (bucket, object_name)
-        return self.request('delete', '/%s/bucket?object&format=%s&%s' %
+        return self.request('delete', '/%s/bucket?format=%s&%s' %
                             (self._admin, self._response, parameters))
 
     def get_policy(self, bucket, object_name=None):
