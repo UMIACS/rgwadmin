@@ -312,7 +312,7 @@ class RGWAdmin:
 
     def modify_user(self, uid, display_name=None, email=None, key_type='s3',
                     access_key=None, secret_key=None, user_caps=None,
-                    generate_key=False, max_buckets=None, suspended=None):
+                    generate_key=False, max_buckets=None, suspended=None, placement_tags=None):
         parameters = 'uid=%s' % uid
         if display_name is not None:
             parameters += '&display-name=%s' % display_name
@@ -331,6 +331,8 @@ class RGWAdmin:
             parameters += '&max-buckets=%s' % max_buckets
         if suspended is not None:
             parameters += '&suspended=%s' % suspended
+        if placement_tags is not None:
+            parameters += '&placement-tags=%s' % placement_tags
         return self.request('post', '/%s/user?format=%s&%s' %
                             (self._admin, self._response, parameters))
 
