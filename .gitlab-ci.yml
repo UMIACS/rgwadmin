@@ -5,14 +5,14 @@ stages:
 
 mypy:
   stage: test
-  image: python:3.8-slim
+  image: registry.umiacs.umd.edu/podman/python:3.8-slim
   script:
     - pip install -q tox
     - tox -e mypy
 
 build_python_package:
   stage: build
-  image: python:3.8-slim
+  image: registry.umiacs.umd.edu/podman/python:3.8-slim
   script:
     - pip install -q -U setuptools wheel
     - python setup.py sdist bdist_wheel
