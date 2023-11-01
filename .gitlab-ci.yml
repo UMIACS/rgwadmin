@@ -56,7 +56,7 @@ build_rpm_rhel9:
 
 upload_pypi:
   stage: deploy
-  image: python:3.8-slim
+  image: registry.umiacs.umd.edu/podman/python:3.8-slim
   script:
     - pip install -q twine
     - twine check dist/*
