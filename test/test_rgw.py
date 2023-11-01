@@ -66,6 +66,10 @@ class RGWAdminTest(unittest.TestCase):
         user = self.rgw.modify_user(uid=self.user1, suspended=False)
         self.assertEqual(user['suspended'], 0)
 
+        # add placement tag to user
+        # user = self.rgw.modify_user(uid=self.user1, placement_tags="ssd")
+        # self.assertListEqual(user['placement_tags'], ["ssd"])
+
     def test_duplicate_email(self):
         with self.assertRaises(InvalidArgument):
             self.rgw.create_user(uid=self.user3,
