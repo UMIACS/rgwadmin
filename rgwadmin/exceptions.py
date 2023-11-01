@@ -18,8 +18,11 @@ class AccessDenied(RGWAdminException):
     """Access was denied for the request."""
 
 
-class UserExists(RGWAdminException):
+class UserAlreadyExists(RGWAdminException):
     """Attempt to create existing user."""
+
+
+UserExists = UserAlreadyExists
 
 
 class InvalidAccessKey(RGWAdminException):

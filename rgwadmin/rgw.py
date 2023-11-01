@@ -13,7 +13,7 @@ from requests_aws4auth import AWS4Auth
 
 from urllib.parse import quote
 from .exceptions import (
-    RGWAdminException, AccessDenied, UserExists,
+    RGWAdminException, AccessDenied, UserAlreadyExists,
     InvalidAccessKey, InvalidSecretKey, InvalidKeyType,
     KeyExists, EmailExists, SubuserExists, InvalidAccess,
     IndexRepairFailed, BucketNotEmpty, ObjectRemovalFailed,
@@ -128,7 +128,7 @@ class RGWAdmin:
                 code = str(j.get('Code', 'InternalError'))
             else:
                 raise ServerDown(None)
-            for e in [AccessDenied, UserExists, InvalidAccessKey,
+            for e in [AccessDenied, UserAlreadyExists, InvalidAccessKey,
                       InvalidKeyType, InvalidSecretKey, KeyExists, EmailExists,
                       SubuserExists, InvalidAccess, InvalidArgument,
                       IndexRepairFailed, BucketNotEmpty, ObjectRemovalFailed,
