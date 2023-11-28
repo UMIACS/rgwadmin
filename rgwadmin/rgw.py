@@ -265,7 +265,7 @@ class RGWAdmin:
 
     def create_user(self, uid, display_name, email=None, key_type='s3',
                     access_key=None, secret_key=None, user_caps=None,
-                    generate_key=True, max_buckets=None, suspended=False):
+                    generate_key=True, max_buckets=None, suspended=False, default_placement=None, placement_tags=None):
         parameters = 'uid=%s&display-name=%s' % (uid, display_name)
         if email is not None:
             parameters += '&email=%s' % email
@@ -281,6 +281,10 @@ class RGWAdmin:
         if max_buckets is not None:
             parameters += '&max-buckets=%s' % max_buckets
         parameters += '&suspended=%s' % suspended
+        if default_placement is not None:
+            parameters += '&default-placement=%s' % default_placement
+        if placement_tags is not None:
+            parameters += '&placement-tags=%s' % placement_tags
         return self.request('put', '/%s/user?format=%s&%s' %
                             (self._admin, self._response, parameters))
 
@@ -312,7 +316,7 @@ class RGWAdmin:
 
     def modify_user(self, uid, display_name=None, email=None, key_type='s3',
                     access_key=None, secret_key=None, user_caps=None,
-                    generate_key=False, max_buckets=None, suspended=None, placement_tags=None):
+                    generate_key=False, max_buckets=None, suspended=None, default_placement=None, placement_tags=None):
         parameters = 'uid=%s' % uid
         if display_name is not None:
             parameters += '&display-name=%s' % display_name
@@ -331,6 +335,8 @@ class RGWAdmin:
             parameters += '&max-buckets=%s' % max_buckets
         if suspended is not None:
             parameters += '&suspended=%s' % suspended
+        if default_placement is not None:
+            parameters += '&default-placement=%s' % default_placement
         if placement_tags is not None:
             parameters += '&placement-tags=%s' % placement_tags
         return self.request('post', '/%s/user?format=%s&%s' %
