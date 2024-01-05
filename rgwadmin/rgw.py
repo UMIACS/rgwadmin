@@ -147,7 +147,7 @@ class RGWAdmin:
             headers['host'] = self._server
         else:
             headers = {'host': self._server}
-        
+
         log.debug('URL: %s' % url)
         log.debug('Access Key: %s' % self._access_key)
         log.debug('Verify: %s  CA Bundle: %s' % (self._verify,
@@ -247,8 +247,8 @@ class RGWAdmin:
             params=params,
         )
 
-    def get_user(self, uid: Optional[str] = None, access_key: Optional[str] = None, stats=False,
-                 sync=False):
+    def get_user(self, uid: Optional[str] = None, access_key: Optional[str] = None,
+                 stats=False, sync=False):
         if uid is not None and access_key is not None:
             raise ValueError('Only one of uid and access_key is allowed')
         parameters = ''
@@ -265,7 +265,8 @@ class RGWAdmin:
 
     def create_user(self, uid, display_name, email=None, key_type='s3',
                     access_key=None, secret_key=None, user_caps=None,
-                    generate_key=True, max_buckets=None, suspended=False, default_placement=None, placement_tags=None):
+                    generate_key=True, max_buckets=None, suspended=False,
+                    default_placement=None, placement_tags=None):
         parameters = 'uid=%s&display-name=%s' % (uid, display_name)
         if email is not None:
             parameters += '&email=%s' % email
@@ -316,7 +317,8 @@ class RGWAdmin:
 
     def modify_user(self, uid, display_name=None, email=None, key_type='s3',
                     access_key=None, secret_key=None, user_caps=None,
-                    generate_key=False, max_buckets=None, suspended=None, default_placement=None, placement_tags=None):
+                    generate_key=False, max_buckets=None, suspended=None,
+                    default_placement=None, placement_tags=None):
         parameters = 'uid=%s' % uid
         if display_name is not None:
             parameters += '&display-name=%s' % display_name
