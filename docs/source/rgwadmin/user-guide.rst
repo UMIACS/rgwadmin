@@ -384,7 +384,7 @@ Remove Bucket
 
 Remove a bucket using :func:`~rgwadmin.rgw.RGWAdmin.remove_bucket`.  You must
 pass purge_objects to delete a non-empty bucket.  If called on a non-empty bucket
-when ``purge_data=False``, this will throw a :class:`~rgwadmin.exceptions.BucketNotEmpty`
+when ``purge_objects=False``, this will throw a :class:`~rgwadmin.exceptions.BucketNotEmpty`
 exception. 
 
 .. code-block:: python
@@ -394,7 +394,7 @@ exception.
                     'RequestId': 'tx0000000000000002a6446-005ed13a10-ad92-default',
                     'HostId': 'ad92-default-default'}
 
-   >>> rgw.remove_bucket(bucket='bucket1', purge_data=True)
+   >>> rgw.remove_bucket(bucket='bucket1', purge_objects=True)
 
 
 Unlink Bucket
